@@ -1,9 +1,12 @@
+from api_calls import get_completion_from_messages
 from flask import Flask, render_template, request, jsonify, session
-from helpers import get_db, close_connection, get_question_and_answer, format_template, get_completion_from_messages
+from tables import get_db, close_connection, get_question_and_answer, export_to_csv
 from templates import CLASSIFICATION
 import os
 from openai import OpenAI
 import sqlite3
+import pandas
+from sentence_transformers import SentenceTransformer
 
 #http://localhost:8000/phpliteadmin.php
 
@@ -33,11 +36,23 @@ def index():
         action = request.form.get('action')
         if action == 'next' and session['index'] < 6:
             session['index'] += 1
-            print("next: ", session['index']) 
         elif action == 'previous' and session['index'] > 1:
             session['index'] -= 1
-            print("previous: ", session['index'])
     question, answer = get_question_and_answer(session['index'])
+    export_to_csv()
+    df = pandas.read_csv('questions_temp.csv')
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    # Generate embeddings for questions and answers
+    question_embeddings = model.encode(df['Question'].tolist(), convert_to_tensor=True)
+    answer_embeddings = model.encode(df['Answer'].tolist(), convert_to_tensor=True)
+    # Add embeddings as new columns
+    df['Question_Embeddings'] = question_embeddings.tolist()
+    df['Answer_Embeddings'] = answer_embeddings.tolist()
+
+    # Save the DataFrame with embeddings to a new CSV file
+    df.to_csv('your_dataset_with_embeddings.csv', index=False)
+
+
     return render_template("index.html", question=question, answer=answer)
 
 

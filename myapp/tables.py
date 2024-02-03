@@ -1,4 +1,4 @@
-
+import csv
 from flask import g
 import sqlite3
 
@@ -25,13 +25,17 @@ def get_question_and_answer(index):
         answer = answer[0]
     return question, answer
 
-def format_template(template, **kwargs):
-    return template.format(**kwargs)
 
-def get_completion_from_messages(client, messages):
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=messages,
-        temperature=0,
-    )
-    return response.choices[0].message.content
+def export_to_csv():
+    conn = get_db()
+    db = conn.cursor()
+    db.execute("SELECT * FROM questions")
+    rows = db.fetchall()
+    with open('questions_temp.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        column_names = [description[0] for description in db.description]
+        writer.writerow(column_names)
+        writer.writerows(rows)
+    close_connection(None)
+
+
