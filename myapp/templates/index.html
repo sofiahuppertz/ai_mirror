@@ -12,9 +12,9 @@
 
 <body>
     <div id="header">
-        <h1>AI MIRROR by Sebastian Errazuriz</h1>
+        <h1>AI MIRROR by Sebastian Errazuriz </h1>
     </div>
-    <div id="container">
+    <div id="book-container">
         <div id="book">
             <form action="/" method="POST">
                 <div>
@@ -31,29 +31,37 @@
                 </div>
             </form>
         </div>
-        <div id="chatbot">
+        <div id="chatbot-container">
             <div id="chatbot-title">
-                <h3>A.I query bot</h3>
+                <h3>Crowdsourcing human intelligence to face A.I</h3>
             </div>
-            <div id="chat-history">
-                <!-- Chat history will be displayed here -->
+            <div id="before-chat">
                 <form action="/chatbot" method="POST" class="conversation-starters">
-                    <button type="submit" class="btn btn-outline-dark" name="action" value="client_answer">Differing from the answer?</button>
-                    <button type="submit" class="btn btn-outline-dark" name="action" value="client_question">Have another question?</button>
+                    <button type="submit" class="btn btn-outline-dark" name="action" value="client_answer">ADD TO THIS ANSWER</button>
+                    <button type="submit" class="btn btn-outline-dark" name="action" value="client_question">HAVE A NEW QUESTION?</button>
                 </form>
             </div>
-            <div class="input-container">
-                <form action="/chatbot" method="POST" id="user-input">
-                    <textarea rows="2" id="userInput" name="userInput"></textarea>
-                    <button type="submit" class="btn" name="action" value="client_input">
-                        <img src="../static/send-icon-2048x1863-u8j8xnb6.png" width="28px" alt="Send">
-                    </button>
-                </form>
+            <div id="chat">
+                <div id="chat-history">
+                    <!-- Chat history will be displayed here -->
+                </div>
+                <div id="input-container">
+                    <form action="/chatbot" method="POST" id="user-input">
+                        <textarea rows="2" id="userInput" name="userInput"></textarea>
+                        <button type="submit" class="btn" name="action" value="client_input">
+                            <img src="../static/send-icon-2048x1863-u8j8xnb6.png" width="28px" alt="Send">
+                        </button>
+                    </form>
+                    <form action="/handle_question" method="POST" id="yes-no-form">
+                        <button type="submit" class="btn btn-lg btn-success yes-button" name="button" value="Yes">Yes</button>
+                        <button type="submit" class="btn btn-lg btn-danger no-button" name="button" value="No">No</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
     <style>
-        #container{
+        #book-container{
             margin : 50px;
         }
 
@@ -72,12 +80,17 @@
             gap: 15px;
         }
 
-        #chatbot
+        #chatbot-container
         {
             padding-top: 50px;
             display: flex;
             flex-direction: column;
             align-items: center;            
+        }
+
+        #chat
+        {
+            display: none;
         }
 
         #chat-history { 
@@ -86,11 +99,41 @@
             overflow-y: auto;
             border: 1px solid transparent; /* Invisible border */
             border-radius: 30px;
-            display: flex;
+            display: block;
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
         }
+
+        .chatbot-message {
+            float: left;
+            clear: both;
+            border: 1px solid black;
+            border-radius: 20px;
+            margin: 10px;
+            margin-right: 80px;
+            padding: 10px;
+        }
+
+        .user-message {
+            float: right;
+            clear: both;
+            border: 1px solid black;
+            border-radius: 15px;
+            margin: 10px;
+            margin-left: 80px;
+            padding: 10px;
+        }
+
+        .yes-button {
+            margin-right: 5px;
+            font-size: 20px;
+        }
+
+        .no-button {
+            margin-left: 5px;
+            font-size: 20px;
+        }   
 
         .conversation-starters {
             display: flex;
@@ -98,7 +141,7 @@
             gap: 15px;
         }
 
-        .input-container {
+        #input-container {
             padding-top: 20px;
             width: 600px;
 
@@ -111,66 +154,36 @@
 
         #userInput {
             width: 550px;
-            border-radius: 10px;
-            background-color:rgb(236, 233, 233);
-            border: 1px solid grey;
+            border-radius: 15px;
+            background-color:rgb(255, 255, 255);
+            border: 1px solid rgb(0, 0, 0);
         }
+
+        #yes-no-form {
+            display: none;
+            justify-content: center;
+        }
+
     </style>
+    <script src="{{ url_for('static', filename='js/helpers.js') }}"></script>
     <script>
-        /* JavaScript to display conversation starters */
         document.addEventListener('DOMContentLoaded', (event) => {
-            const conversationStarters = document.querySelector('.conversation-starters');
-            const chatbotButtons = document.querySelectorAll('#chatbot button');
-            let client_request = "";
-
-            chatbotButtons.forEach(button => {
-                button.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    let userInput = document.querySelector('#userInput').value;
-
-                    if (button.value != "client_input" || userInput) {
-                        conversationStarters.style.display = 'none';
-                        document.getElementById('chat-history').style.display = "block";
-                    }
-                    
-                    if (button.value === 'client_input' && userInput) {
-                        
-                        let userMessageDiv = document.createElement('div');
-                        userMessageDiv.textContent = userInput;
-
-                        userMessageDiv.style.float = 'right';
-                        userMessageDiv.style.clear = 'both';
-                        userMessageDiv.style.border = '1px solid black';
-                        userMessageDiv.style.borderRadius = '20px';
-                        userMessageDiv.style.margin = '10px';
-                        userMessageDiv.style.padding = '10px';
-                        
-                        document.querySelector('#chat-history').appendChild(userMessageDiv);
-                        client_request = userInput;
-                        document.querySelector('#userInput').value = '';
-                    }
-                    else if (button.value === 'client_answer')
-                    {
-                        client_request = "Differing from the answer"
-                    }
-                    else if (button.value === 'client_question')
-                    {
-                        client_request = "Have another question"
-                    }
-
-                    fetch('/chatbot', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            client_request: client_request
-                        })
-                    })
-
-                });
-            });
+            reset_chatbot();
         });
+
+            document.querySelector('#chat').addEventListener('click', function(event) {
+                if (event.target.matches('#page-link')) {
+                    event.preventDefault();
+
+                    var pageNumber = event.target.getAttribute('data-page-number');
+                    postData('/change_page', {index: pageNumber})
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = '/';
+                        }
+                    });
+                }
+            });
     </script>
 </body>
 </html>
