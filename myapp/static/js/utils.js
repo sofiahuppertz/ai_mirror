@@ -1,7 +1,7 @@
 
-// Utils.js
+// FUNCTION TO APPEAR MESSAGES IN CHAT
 
-function send_message(message, className){
+export function send_message(message, className){
     let chatMessageDiv = document.createElement('div');
     chatMessageDiv.innerHTML = message;
     chatMessageDiv.className = className;
@@ -10,8 +10,9 @@ function send_message(message, className){
     chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 
+//FUCNTION TO SEND DATA TO SERVER
 
-function postData(route, data) {
+export function postData(route, data) {
     console.log('route inside PostData: ', route)
     return fetch(route, {
         method: 'POST',

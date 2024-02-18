@@ -45,10 +45,16 @@ def index():
     return render_template("index.html", question=question, answer=answer)
 
 
-@app.route('/change_page', methods=['POST'])
-def change_page():
+@app.route('/turn_page', methods=['POST'])
+def turn_page():
     data = request.get_json()
     session['index'] = int(data.get('index'))
+    reset_history(session)
+    reset_path(session)
+    return redirect(url_for('index'))
+
+@app.route("/reset_page", methods=["POST"])
+def reset_page():
     reset_history(session)
     reset_path(session)
     return redirect(url_for('index'))
@@ -58,10 +64,8 @@ def change_page():
 def chatbot():
     data = request.get_json()
     user_message = data.get('user_input')
-    buttons = "False"
     print("User message: ", user_message)  
     print("-" * 50)
-    chatbot_response = " "
     if 'history' not in session:
         session['history'] = []
     #handle conversation path
@@ -71,21 +75,25 @@ def chatbot():
         print("Path: ", session['path'])
         print("-" * 50)
 
-    #handle path A
     if (session['path'] == 'A'):
             # Wait for question embeddings to be generated
             error_response = wait_for_output_queue(output_queue)
             if error_response is None:
                 model, question_embeddings, df = output_queue.get()
-                chatbot_response = get_most_similar_question(client, user_message, model, question_embeddings, df)
-                buttons = "True"
-                append_to_history(session, user_message, remove_link(chatbot_response))
-
-    return jsonify({"server_response": chatbot_response, "buttons": buttons})
+                response = get_most_similar_question(client, user_message, model, question_embeddings, df)
+                data = create_data_dict(response, "/handle_question", "True", "False")
+    elif (session['path'] == 'B'):
+        response = "Do you allow us to add your answer to our database for future editions of the book?"
+        data = create_data_dict(response, "/handle_question", "True", "False")
+    else:
+        response = "Sorry I can't help you with that request."
+        data = create_data_dict(response, "/reset_page", "False", "True")
+    append_to_history(session, user_message, remove_link(response))
+    return jsonify(data)
 
 @app.route("/handle_question", methods=["POST"])
 def handle_question():
-    chatbot_response = " "
+    response = " "
     data = request.get_json()
     user_message = data.get('button_value')
     print(user_message)
@@ -95,36 +103,43 @@ def handle_question():
     print("response: ", response) 
     if response == 'A':
         if user_message == "Yes":
-            #Greet and finish conversation
-            chatbot_response = "&#x1F44D;"
-            buttons = "False"
-            end_chat = "True"
+            data = create_data_dict("&#x1F44D;", "/reset_page", "False", "True")
         else:
-            # Ask if user would like to add question to book
-            chatbot_response = "I see... Sorry we couldn't help you yet. You can add your question to the book for future editions, would you like that?"
-            buttons = "True"
-            end_chat = "False"
+            response = "I see... Sorry we couldn't help you yet. You can add your question to the book for future editions, would you like that?"
+            data = create_data_dict(response, "/handle_question", "True", "False")
     if response == 'B':
         if user_message == "Yes":
-            chatbot_response = "Proceed to adding question to database ..."
-            buttons = "False"
-            end_chat = "False"
+            response = "Please add a name..."
+            data = create_data_dict(response, "/colect_data", "False", "False")   
         else:
-            chatbot_response = "Greet and finish conversation..."
-            buttons = "False"
-            end_chat = "True"
-    append_to_history(session, user_message, chatbot_response)
-    if (end_chat == "True"):
-        reset_path(session)
-        reset_history(session)
-    return jsonify({"server_response": chatbot_response, "buttons": buttons, "end_chat": end_chat}) 
+            data = create_data_dict("&#x1F44D;", "/reset_page", "False", "True")
+    append_to_history(session, user_message, response)
+    print(data)
+    print("-" * 50)
+    return jsonify(data) 
 
 
-@app.route("/end_chat", methods=["POST"])
-def end_chat():
-    reset_history(session)
-    reset_path(session)
-    return jsonify({'redirect': url_for('index')})
+@app.route("/colect_data", methods=["POST"])
+def colect_data():
+    print("Colecting data...")
+    print("-" * 50)
+    data = request.get_json()
+    user_message = data.get('user_input')
+    print(user_message)
+    print("-" * 50)
+    last_request = session['history'][-1]['chatbot_response']
+    if (last_request == "Please add a name..."):
+        response = "Please add an ocupation or profession..."
+        data = create_data_dict(response, "/colect_data", "False", "False")
+    elif (last_request == "Please add an ocupation or profession..."):
+        response = "Add an email to alert you when the new book edition with your added insight is published."
+        data = create_data_dict(response, "/colect_data", "False", "False")
+    else:
+        response = "Thank you for your contribution and for helping humans!"
+        data = create_data_dict(response, "/reset_page", "False", "True")
+    append_to_history(session, user_message, response)
+    return jsonify(data)
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000)

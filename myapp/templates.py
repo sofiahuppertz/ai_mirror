@@ -49,6 +49,6 @@ MOST_SIMILAR_QA_FINAL = (
 DEFINE_PREVIOUS_QUESTION = (
     "Your task is to classify a given user message within 2 categrories:\n"
     "A) The user is asking \"Does this answer your question?\".\n"
-    "B) The user is proposing you to add your question to the book.\n"
+    "B) The user is proposing you or asking your permission to add your question/answer to the book.\n"
     "IMPORTANT: The response should be in JSON with the key response and the value being the letter (e.g., {{\"response\": \"A\"}}).\n"
 )

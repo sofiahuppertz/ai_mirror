@@ -56,6 +56,9 @@
                         <button type="submit" class="btn btn-lg btn-success yes-button" name="button" value="Yes">Yes</button>
                         <button type="submit" class="btn btn-lg btn-danger no-button" name="button" value="No">No</button>
                     </form>
+                    <form id="reset-chat">
+                        <button type="submit" class="btn btn-warning reset-button" name="button" value="reset">Reset Chat</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -155,7 +158,7 @@
         #userInput {
             width: 550px;
             border-radius: 15px;
-            background-color:rgb(255, 255, 255);
+            background-color:rgb(252, 252, 247);
             border: 1px solid rgb(0, 0, 0);
         }
 
@@ -164,27 +167,13 @@
             justify-content: center;
         }
 
+        #reset-chat {
+            display: none;
+            justify-content: center;
+        } 
+
     </style>
-    <script src="{{ url_for('static', filename='js/helpers.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            reset_chatbot();
-        });
-
-            document.querySelector('#chat').addEventListener('click', function(event) {
-                if (event.target.matches('#page-link')) {
-                    event.preventDefault();
-
-                    var pageNumber = event.target.getAttribute('data-page-number');
-                    postData('/change_page', {index: pageNumber})
-                    .then(response => {
-                        if (response.ok) {
-                            window.location.href = '/';
-                        }
-                    });
-                }
-            });
-    </script>
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
 
