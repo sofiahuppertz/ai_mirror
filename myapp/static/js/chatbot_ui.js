@@ -31,8 +31,7 @@ function handleServerRespone (data) {
     // Append server response to chat history
     utils.send_message(data.server_response, 'chatbot-message');
 
-    console.log(data)
-    console.log(data.route)
+    console.log("Route in handleServerResponse: ", data.route)
     // Check if chatbot should end conversation
     if (data.reset_page === "True") {
         //return resetButtonForm();
@@ -54,6 +53,7 @@ function handleTextInput(event, route) {
 
     event.preventDefault();
 
+    console.log("Route in handleTextInput: ", route)
     // Check if user input is empty
     let userInput = document.querySelector('#userInput').value;
     if (userInput == '') {
@@ -76,6 +76,7 @@ function handleTextInput(event, route) {
 
 
 export function textFom(route) {
+    console.log("Route in textForm: ", route)
     // Hide Yes/No buttons and show input field
     const binary_form = document.getElementById('yes-no-form');
     const user_input = document.getElementById('user-input');
@@ -85,13 +86,22 @@ export function textFom(route) {
 
     // Add event listener to input field and enter key
     const inputBtn = document.querySelector('#input-container button');
-    inputBtn.addEventListener('click', event => handleTextInput(event, route), {once: true});
+    inputBtn.addEventListener('click', function(event) {
+        handleTextInput(event, route);
+    } , {once: true});
 
-    document.getElementById('userInput').addEventListener('keydown', function(event) {
+    const userInputElem = document.getElementById('userInput');
+    
+    // Remove any existing 'keydown' event listeners
+    const clonedUserInputElem = userInputElem.cloneNode(true);
+    userInputElem.parentNode.replaceChild(clonedUserInputElem, userInputElem);
+    
+    // Add a new 'keydown' event listener
+    clonedUserInputElem.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             handleTextInput(event, route);
         }
-    }); //Make sure there aren't bugs with this event listener being added multiple times
+    });
 }
 
 // FUNCTION FOR HANDLING YES/NO BUTTONS
@@ -108,6 +118,8 @@ function setupButton(buttonClass, initialClass, clickClass) {
 }
 
 export function binaryForm(route) {
+
+    console.log("Route in binaryForm: ", route)
 
     // Hide input field and show Yes/No buttons
     const binary_form = document.getElementById('yes-no-form');

@@ -18,6 +18,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 output_queue = Queue()
+placeholder = ""
 
 @app.after_request
 def after_request(response):
@@ -66,15 +67,12 @@ def chatbot():
     user_message = data.get('user_input')
     print("User message: ", user_message)  
     print("-" * 50)
-    if 'history' not in session:
-        session['history'] = []
     #handle conversation path
     print("Session: ", session)
     if 'path' not in session:
         session['path'] = get_conversation_path(client, session, user_message)
         print("Path: ", session['path'])
         print("-" * 50)
-
     if (session['path'] == 'A'):
             # Wait for question embeddings to be generated
             error_response = wait_for_output_queue(output_queue)
@@ -85,7 +83,7 @@ def chatbot():
     elif (session['path'] == 'B'):
         response = "Do you allow us to add your answer to our database for future editions of the book?"
         data = create_data_dict(response, "/handle_question", "True", "False")
-    else:
+    else: 
         response = "Sorry I can't help you with that request."
         data = create_data_dict(response, "/reset_page", "False", "True")
     append_to_history(session, user_message, remove_link(response))
@@ -103,16 +101,19 @@ def handle_question():
     print("response: ", response) 
     if response == 'A':
         if user_message == "Yes":
-            data = create_data_dict("&#x1F44D;", "/reset_page", "False", "True")
+            response = "&#x1F44D;"
+            data = create_data_dict(response, "/reset_page", "False", "True")
         else:
             response = "I see... Sorry we couldn't help you yet. You can add your question to the book for future editions, would you like that?"
             data = create_data_dict(response, "/handle_question", "True", "False")
     if response == 'B':
         if user_message == "Yes":
-            response = "Please add a name..."
+            placeholder = "question" if session['path'] == 'A' else "answer"
+            response = "How would you like your {} to appear in the book?".format(placeholder)
             data = create_data_dict(response, "/colect_data", "False", "False")   
         else:
-            data = create_data_dict("&#x1F44D;", "/reset_page", "False", "True")
+            response = "&#x1F44D;"
+            data = create_data_dict(response, "/reset_page", "False", "True")
     append_to_history(session, user_message, response)
     print(data)
     print("-" * 50)
@@ -128,7 +129,15 @@ def colect_data():
     print(user_message)
     print("-" * 50)
     last_request = session['history'][-1]['chatbot_response']
-    if (last_request == "Please add a name..."):
+    print("Last request: ", last_request)
+    print("-" * 50)
+    if last_request == "How would you like your question to appear in the book?":
+        response = "Please add a name..."
+        data = create_data_dict(response, "/colect_data", "False", "False")
+    elif (last_request == "How would you like your answer to appear in the book?"):
+        response = "Please add a name..."
+        data = create_data_dict(response, "/colect_data", "False", "False")
+    elif (last_request == "Please add a name..."):
         response = "Please add an ocupation or profession..."
         data = create_data_dict(response, "/colect_data", "False", "False")
     elif (last_request == "Please add an ocupation or profession..."):

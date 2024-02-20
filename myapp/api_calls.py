@@ -1,6 +1,6 @@
 
 
-def get_json_from_gpt(client, model, messages):
+def get_json_response(client, model, messages):
     response = client.chat.completions.create(
         model=model,
         response_format={ "type": "json_object" },
