@@ -34,3 +34,19 @@ def export_to_csv(string):
     return
 
 
+def add_to_db(session):
+
+    conn = get_db()
+    db = conn.cursor()
+
+    query = session['query']
+    name = session['name']
+    ocupation = session['ocupation']
+    email = session['email']
+    if session['path'] == 'A':
+        db.execute("INSERT INTO new_questions (query, name, ocupation, email) VALUES (?, ?, ?, ?)", (query, name, ocupation, email))
+    elif session['path'] == 'B':
+        db.execute("INSERT INTO new_answers (answer, name, ocupation, email) VALUES (?, ?, ?, ?)", (query, name, ocupation, email))
+    conn.commit()
+    conn.close()
+    return

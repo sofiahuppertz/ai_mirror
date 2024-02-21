@@ -1,15 +1,15 @@
 
-def reset_path(session):
+def reset_chatbot_info(session):
     if 'path' in session:
         session.pop('path')
-    session.modified = True
-    return
-
-def reset_history(session):
+    if 'question_type' in session:
+        session.pop('question_type')
     if 'history' in session:
         session.pop('history')
     session.modified = True
     return
+
+
 
 def append_to_history(session, user_message, chatbot_response):
     if 'history' not in session:

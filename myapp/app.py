@@ -38,8 +38,7 @@ def index():
             session['index'] += 1
         elif action == 'previous' and session['index'] > 1:
             session['index'] -= 1
-    reset_history(session)
-    reset_path(session)
+    reset_chatbot_info(session)
     question, answer = get_question_and_answer(session['index'])
     thread = Thread(target=generate_embeddings, args=(output_queue,))
     thread.start()
@@ -50,14 +49,13 @@ def index():
 def turn_page():
     data = request.get_json()
     session['index'] = int(data.get('index'))
-    reset_history(session)
-    reset_path(session)
+    reset_chatbot_info(session)
     return redirect(url_for('index'))
+
 
 @app.route("/reset_page", methods=["POST"])
 def reset_page():
-    reset_history(session)
-    reset_path(session)
+    reset_chatbot_info(session)
     return redirect(url_for('index'))
 
 
@@ -65,8 +63,6 @@ def reset_page():
 def chatbot():
     data = request.get_json()
     user_message = data.get('user_input')
-    print("User message: ", user_message)  
-    print("-" * 50)
     #handle conversation path
     print("Session: ", session)
     if 'path' not in session:
@@ -94,11 +90,8 @@ def handle_question():
     response = " "
     data = request.get_json()
     user_message = data.get('button_value')
-    print(user_message)
-    print(session['history'])
     # Define based on history wether the reply is to 1) Ask if answer was helpful or 2) Ask if user wants to add question to book.
     response = get_question_path(client, session)
-    print("response: ", response) 
     if response == 'A':
         if user_message == "Yes":
             response = "&#x1F44D;"
@@ -115,38 +108,38 @@ def handle_question():
             response = "&#x1F44D;"
             data = create_data_dict(response, "/reset_page", "False", "True")
     append_to_history(session, user_message, response)
-    print(data)
-    print("-" * 50)
     return jsonify(data) 
 
 
 @app.route("/colect_data", methods=["POST"])
 def colect_data():
-    print("Colecting data...")
-    print("-" * 50)
     data = request.get_json()
     user_message = data.get('user_input')
-    print(user_message)
-    print("-" * 50)
     last_request = session['history'][-1]['chatbot_response']
-    print("Last request: ", last_request)
-    print("-" * 50)
+
     if last_request == "How would you like your question to appear in the book?":
+        session['query'] = user_message
         response = "Please add a name..."
         data = create_data_dict(response, "/colect_data", "False", "False")
     elif (last_request == "How would you like your answer to appear in the book?"):
+        session['query'] = user_message
         response = "Please add a name..."
         data = create_data_dict(response, "/colect_data", "False", "False")
     elif (last_request == "Please add a name..."):
+        session['name'] = user_message
         response = "Please add an ocupation or profession..."
         data = create_data_dict(response, "/colect_data", "False", "False")
     elif (last_request == "Please add an ocupation or profession..."):
+        session['ocupation'] = user_message
         response = "Add an email to alert you when the new book edition with your added insight is published."
         data = create_data_dict(response, "/colect_data", "False", "False")
     else:
+        session['email'] = user_message
         response = "Thank you for your contribution and for helping humans!"
         data = create_data_dict(response, "/reset_page", "False", "True")
+        add_to_db(session)
     append_to_history(session, user_message, response)
+
     return jsonify(data)
 
 
