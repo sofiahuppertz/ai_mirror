@@ -50,7 +50,7 @@ function last_chatbot_message() {
 
 export function reset_page() {
     last_chatbot_message().then(() => {
-        utils.postData('/reset_page', {reset_page: 'True'})
+        utils.postData('/', {})
         .then(response => response.json())
         .then(data => {
             if (data.redirect){

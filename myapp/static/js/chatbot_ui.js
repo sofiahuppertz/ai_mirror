@@ -16,7 +16,7 @@ export function resetButtonForm() {
 
     resetChat.addEventListener('submit', (event) => {
         event.preventDefault(); // Prevent form submission
-        utils.postData('/reset_page', {})
+        utils.postData('/', {})
         .then(response => {
             if (response.ok) {
                 window.location.href = '/';
@@ -163,7 +163,7 @@ export function handlePageLink () {
     
             var pageNumber = event.target.getAttribute('data-page-number');
             console.log(pageNumber);
-            utils.postData('/turn_page', {index: pageNumber})
+            utils.postData('/page/' + pageNumber, {index: pageNumber})
             .then(response => {
                 if (response.ok) {
                     window.location.href = '/';
