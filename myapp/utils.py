@@ -1,6 +1,9 @@
-import re
 import csv
+import json
+import os
 import psycopg2
+import re
+import requests
 
 # Backend Fronted communication
 
@@ -49,10 +52,12 @@ def append_to_history(session, user_message, chatbot_response):
 # Database utils
 
 def get_db():
+
+    password = os.getenv("POSTGREE_KEY")
     conn = psycopg2.connect(
         dbname='book_db',
         user='postgres',
-        password='rosado',
+        password=password,
         host='localhost',
         port='5432'
     )
@@ -60,17 +65,27 @@ def get_db():
     return conn, cur
 
 def get_question_and_answer(page):
-    conn, cur = get_db()
-    cur.execute("SELECT question FROM book WHERE id=%s", (page,))
-    question = cur.fetchone()
-    if question is not None:
-        question = question[0]
-    answer = cur.execute("SELECT answer FROM book WHERE id=%s", (page,))
-    answer = cur.fetchone()
-    if answer is not None:
-        answer = answer[0]
-    cur.close()
-    conn.close()
+
+    query = f"SELECT question, answer FROM book WHERE id={page}"
+
+    # Create request headers with Content-Type as application/json
+    headers = {'Content-Type': 'application/json'}
+
+    # Convert query to JSON format
+    query_json = json.dumps({'query': query})
+
+    # Make the request with updated headers and JSON data
+    response = requests.post('http://localhost:8000/get_data', data=query_json, headers=headers)
+    data = response.json()
+    
+    if 'response' in data:
+        if len(data['response']) > 0:
+            question, answer = data['response']  # Extracting the first tuple
+        else:
+            print("No data found for the given ID.")
+    else:
+        print("Invalid JSON response from the server.")
+
     return question, answer
 
 
@@ -88,22 +103,21 @@ def export_to_csv(string):
     return
 
 
-def add_to_db(session):
+def insert_to_table(query, pprint=False):
 
-    conn, cur = get_db()
+    # Create request headers with Content-Type as application/json
+    headers = {'Content-Type': 'application/json'}
 
-    query = session['query']
-    name = session['name']
-    ocupation = session['ocupation']
-    email = session['email']
-    if session['path'] == 'A':
-        cur.execute("INSERT INTO new_questions (query, name, ocupation, email) VALUES (%s, %s, %s, %s)", (query, name, ocupation, email))
-    elif session['path'] == 'B':
-        cur.execute("INSERT INTO new_answers (answer, name, ocupation, email) VALUES (%s, %s, %s, %s)", (query, name, ocupation, email))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return
+    # Convert query to JSON format
+    query_json = json.dumps({'query': query})
+
+    # Make the request with updated headers and JSON data
+    response = requests.post('http://localhost:8000/execute_query', data=query_json, headers=headers)
+    
+    if pprint == True:
+        print(response)
+
+    return response
 
 # Save for later
 

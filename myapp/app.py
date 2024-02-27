@@ -1,8 +1,6 @@
 from classify_conversation import classify_conversation
 from flask import Flask, render_template, request, jsonify, session
 from flask_session import Session
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
 import os
 from openai import OpenAI
 import psycopg2
@@ -12,19 +10,6 @@ import utils
 import requests
 
 app = Flask(__name__)
-
-# Set up the database
-
-# db = SQLAlchemy(app)
-# db_Cred = {
-#     'user': 'postgres',
-#     'pass': 'rosado',
-#     'host': 'localhost',
-#     'name': 'book_db'
-# }
-# app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_Cred["user"]}:{db_Cred["pass"]}@{db_Cred["host"]}/{db_Cred["name"]}'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
-
 
 # Set session management to redis servers
 
@@ -190,63 +175,76 @@ def colect_data():
 
     # Get the user's input and set the response based on the last request
     data = request.get_json()
-    request = data.get('user_input')
+    curr_request = data.get('user_input')
     previous_request = session['history'][-1]['chatbot_response']
+    print(session['history'])
 
     # Add the question to the database and store the id of the new record. If we already have the person's data, conncet it to the person' s data.
     if previous_request == "How would you like your question to appear in the book?":
-        session['query'] = request
-
-        response = ""
+        session['query'] = curr_request
+        response = chatbot_responses[4]
+        utils.insert_to_table(f"INSERT INTO questions (question) VALUES ('{curr_request}')", pprint=True)
         data = utils.create_data_dict(response, "/colect_data", "False", "False")
 
     elif (previous_request == "How would you like your answer to appear in the book?"):
-        session['query'] = request
+        session['query'] =curr_request
         response = chatbot_responses[4]
         data = utils.create_data_dict(response, "/colect_data", "False", "False")
 
     elif (previous_request == chatbot_responses[4]):
-        session['name'] = request
+        session['name'] =curr_request
         response = chatbot_responses[5]
         data = utils.create_data_dict(response, "/colect_data", "False", "False")
 
     elif (previous_request == chatbot_responses[5]):
-        session['ocupation'] = request
+        session['ocupation'] = curr_request
         response = chatbot_responses[6]
         data = utils.create_data_dict(response, "/colect_data", "False", "False")
 
     else:
-        session['email'] = request
+        session['email'] = curr_request
         response = chatbot_responses[7]
         data = utils.create_data_dict(response, "/", "False", "True")
         # utils.add_to_db(session)
-    utils.append_to_history(session, request, response)
+    utils.append_to_history(session, curr_request, response)
 
     return jsonify(data)
 
 
-@app.route("/get_data", methods=["GET"])
+
+@app.route("/get_data", methods=["POST"])
 def get_data():
 
     conn, cur = utils.get_db()
     query = request.get_json()['query']
-    print(query)
-    cur.execute(query)
-    result = cur.fetchone()
-    print(result)
     
+    cur.execute(query)
+    response = cur.fetchone()      
     cur.close()
     conn.close()
-    
-    i = 1
-    response = {}
-    for each in result: 
-        response.update({f'Record {i}': list(each)}) 
-        i+= 1
   
-    return response 
+    return jsonify({"response": response})
 
+
+
+
+@app.route("/execute_query", methods=["POST"])
+def execute_query():
+    conn, cur = utils.get_db()
+    query = request.get_json()['query']
+
+    try:
+        cur.execute(query)
+        conn.commit()
+        
+    except: 
+        return jsonify({"message": "Request could not be completed."})
+  
+    cur.close()
+    conn.close()
+
+    return jsonify({"message": "Query executed successfully."})
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=8000, debug=True)
