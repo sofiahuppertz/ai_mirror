@@ -12,21 +12,6 @@ embedding_model = "text-embedding-3-large"
 
 datafile_path = "static/text_3_large_embeddings.csv"
 
-CHATBOT_RESPONSE = (
-    "Your instructions is to provide the user with the following info :\n"
-    "You will be given a Question, Answer, and Page number.\n"
-    "1. Greet the user and let know there is a similar question\n"
-    "2. Cite the question, do not paraphrase it, and inform the page.\n"
-    "3. Provide one thing the answer talks about, the most related idea of the question to the user's message. Don't provide the entire idea you choose, just mention the answer dives into that topic.\n"
-    "Your response cannot surpass 70 tokens.\n"
-    "Here is an example of a response:\n"
-    "Hello! We have a similar question: 'JOB SEARCH AND HIRING BECOMES A SCIENCE?' on page 37, discussing AI's role in hiring.\n"
-    "For reference:\n"
-    "Question: \"\"{question}\"\".\n"
-    "Answer: \"\"{answer}\"\".\n"
-    "Page: \"\"{page}\"\".\n"
-)
-
 
 # Load dataframe
 
@@ -87,15 +72,10 @@ def similarity(client, user_message):
         if result is None:
             raise ValueError("Result is none")
         
-        answer = result[2]
         page = result[0]
-        
-        context = CHATBOT_RESPONSE.format(question=question, answer=answer, page=page)
-        message = [{'role': 'system', 'content': context}, {'role': 'user', 'content': user_message}]
-        response = utils.get_text_response(client, message)
-        
-        response += " "
-        response += f'<a href="#" id="page-link" data-page-number="{page}">Check page here.</a>'
+
+        response = f"Hello! We have a similar question: {question[0]} on page {page},  "
+        response += f'<a href="#" id="page-link" data-page-number="{page}">check page here.</a>'
         response += " Does this answer your question?"
             
     except ValueError as e:

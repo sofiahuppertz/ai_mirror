@@ -7,7 +7,7 @@ import requests
 
 # Backend Fronted communication
 
-def create_data_dict(response, next_route, buttons, reset_page):
+def json_dict(response, next_route, buttons, reset_page):
     dict = {
         "server_response" : response,
         "route": next_route,
@@ -113,7 +113,8 @@ def insert_to_table(query, pprint=False):
 
     # Make the request with updated headers and JSON data
     response = requests.post('http://localhost:8000/execute_query', data=query_json, headers=headers)
-    
+    response = response.json()
+    response = response['primary_key']
     if pprint == True:
         print(response)
 

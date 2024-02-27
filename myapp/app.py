@@ -91,87 +91,118 @@ def page(page_number):
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
     
+    response = ""
+    placeholder = ""
     data = request.get_json()
     user_message = data.get('user_input')
 
-    #handle conversation path
+    # Start the conversation
     if 'path' not in session:
+        # Classify the conversation based on the user's input into 3 relevant paths: question, answer, or none of those
         session['path'] = classify_conversation(client, session, user_message)
+        
+        # If the user's input is a question, run a similarity search
+        if (session['path'] == 'A'):
 
-    if (session['path'] == 'A'):
-            
-            response = similarity(client, user_message,)
+                response = similarity(client, user_message,)
 
-            if response == "An unexpected error ocurred. Please try again later.":
-                data = utils.create_data_dict(response, "/", "False", "True")
+                if response == "An unexpected error ocurred. Please try again later.":
+                    data = utils.json_dict(response, "/", "False", "True")
+
+                else:
+                    session['question_type'] = 'A'
+                    data = utils.json_dict(response, "/chatbot", "True", "False")
+        # If the user's input is an answer, ask if they want to add it to the book
+        elif (session['path'] == 'B'):
+
+            response = chatbot_responses[0]
+
+            session['question_type'] = 'B'
+
+            data = utils.json_dict(response, "/chatbot", "True", "False")
+
+    # Respond to different types of reuqests based on the past messages   
+    elif 'question_type' in session:
             
-            else:
-                session['question_type'] = 'A'
-                data = utils.create_data_dict(response, "/handle_question", "True", "False")
-    
-    elif (session['path'] == 'B'):
-        
-        response = chatbot_responses[0]
-        
-        session['question_type'] = 'B'
-        
-        data = utils.create_data_dict(response, "/handle_question", "True", "False")
-    
+            print(session['question_type'])
+            print(user_message)
+
+            # "Does this answer your question?"
+            if session['question_type'] == 'A':
+                
+                # If the user is satisfied with the answer, end the conversation
+                if user_message == "Yes":
+                    
+                    response = "&#x1F44D;"
+
+                    data = utils.json_dict(response, "/", "False", "True")
+
+                # If the user is not satisfied with the answer, ask if they want to add their question to the book
+                else:
+                    
+                    response = chatbot_responses[2]
+
+                    session['question_type'] = 'B'
+
+                    data = utils.json_dict(response, "/chatbot", "True", "False")
+
+            # "Would you like to add your question/answer to the book?"
+            elif session['question_type'] == 'B':
+
+                # If the user wants to add their question/answer to the book, ask for the final input
+                if user_message == "Yes":
+                    
+                    placeholder = "question" if session['path'] == 'A' else "answer"
+
+                    response = chatbot_responses[3].format(placeholder)
+
+                    session['question_type'] = 'C'
+
+                    data = utils.json_dict(response, "/chatbot", "False", "False")   
+
+                # If the user doesn't want to add their question/answer to the book, end the conversation
+                else:
+                    
+                    response = "&#x1F44D;"
+                    
+                    data = utils.json_dict(response, "/", "False", "True")
+
+            # "How would you like your {} to appear in the book?" 
+            elif session['question_type'] == 'C':
+                
+                # Add the user's input to the database
+                
+                utils.insert_to_table(f"INSERT INTO questions (question) VALUES ('{user_message}')", pprint=True)
+                
+                # Redirect to collect the user's information
+                if 'name' not in session:
+                    
+                    response = chatbot_responses[4]
+                    data = utils.json_dict(response, "/register_person", "False", "False")
+                
+                # Or end the conversation
+                else:
+                
+                    response = chatbot_responses[7]
+                    data = utils.json_dict(response, "/", "False", "True")
+    # End the conversation if the user doesn't follow the conversation's flow
     else: 
         
         response = chatbot_responses[1]
         
-        data = utils.create_data_dict(response, "/", "False", "True")
+        data = utils.json_dict(response, "/", "False", "True")
     
-    session.modified = True
+    # Add new messages to our history
     utils.append_to_history(session, user_message, utils.remove_link(response))
+    session.modified = True
+
+    # Return the chatbot's response
     return jsonify(data)
 
 
 
-@app.route("/handle_question", methods=["POST"])
-def handle_question():
-    
-    response = ""
-    placeholder = ""
-    data = request.get_json()
-    user_message = data.get('button_value')
-
-    if session['question_type'] == 'A':
-        
-        if user_message == "Yes":
-            response = "&#x1F44D;"
-            
-            data = utils.create_data_dict(response, "/", "False", "True")
-        
-        else:
-            response = chatbot_responses[2]
-            
-            session['question_type'] = 'B'
-            
-            data = utils.create_data_dict(response, "/handle_question", "True", "False")
-    
-    elif session['question_type'] == 'B':
-
-        if user_message == "Yes":
-            placeholder = "question" if session['path'] == 'A' else "answer"
-            
-            response = chatbot_responses[3].format(placeholder)
-            
-            data = utils.create_data_dict(response, "/colect_data", "False", "False")   
-        
-        else:
-            response = "&#x1F44D;"
-            data = utils.create_data_dict(response, "/", "False", "True")
-    
-    utils.append_to_history(session, user_message, response)
-    return jsonify(data) 
-
-
-
-
-@app.route("/colect_data", methods=["POST"])
-def colect_data():
+@app.route("/register_person", methods=["POST"])
+def register_person():
 
     # Get the user's input and set the response based on the last request
     data = request.get_json()
@@ -179,32 +210,20 @@ def colect_data():
     previous_request = session['history'][-1]['chatbot_response']
     print(session['history'])
 
-    # Add the question to the database and store the id of the new record. If we already have the person's data, conncet it to the person' s data.
-    if previous_request == "How would you like your question to appear in the book?":
-        session['query'] = curr_request
-        response = chatbot_responses[4]
-        utils.insert_to_table(f"INSERT INTO questions (question) VALUES ('{curr_request}')", pprint=True)
-        data = utils.create_data_dict(response, "/colect_data", "False", "False")
-
-    elif (previous_request == "How would you like your answer to appear in the book?"):
-        session['query'] =curr_request
-        response = chatbot_responses[4]
-        data = utils.create_data_dict(response, "/colect_data", "False", "False")
-
-    elif (previous_request == chatbot_responses[4]):
+    if (previous_request == chatbot_responses[4]):
         session['name'] =curr_request
         response = chatbot_responses[5]
-        data = utils.create_data_dict(response, "/colect_data", "False", "False")
+        data = utils.json_dict(response, "/register_person", "False", "False")
 
     elif (previous_request == chatbot_responses[5]):
         session['ocupation'] = curr_request
         response = chatbot_responses[6]
-        data = utils.create_data_dict(response, "/colect_data", "False", "False")
+        data = utils.json_dict(response, "/register_person", "False", "False")
 
     else:
         session['email'] = curr_request
         response = chatbot_responses[7]
-        data = utils.create_data_dict(response, "/", "False", "True")
+        data = utils.json_dict(response, "/", "False", "True")
         # utils.add_to_db(session)
     utils.append_to_history(session, curr_request, response)
 
@@ -236,14 +255,15 @@ def execute_query():
     try:
         cur.execute(query)
         conn.commit()
-        
+        primary_key = cur.lastrowid
+        print(primary_key)
     except: 
         return jsonify({"message": "Request could not be completed."})
-  
+    
     cur.close()
     conn.close()
 
-    return jsonify({"message": "Query executed successfully."})
+    return jsonify({"message": "Query executed successfully.", "primary_key": primary_key})
 
 
 if __name__ == '__main__':

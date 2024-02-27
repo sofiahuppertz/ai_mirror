@@ -146,7 +146,7 @@ export function binaryForm(route) {
         document.querySelector('.no-button').disabled = true;
         
         // Send button value to server and handle server response
-        utils.postData(route, { button_value: buttonValue })
+        utils.postData(route, { user_input: buttonValue })
         .then(response => response.json())
         .then(data => handleServerRespone(data));
     }, {once: true});
