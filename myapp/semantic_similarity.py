@@ -79,8 +79,10 @@ def similarity(client, user_message):
         if question is None:
             raise ValueError("Question is none")
         
-        conn, db = utils.get_db() 
-        result = db.execute("SELECT * FROM questions WHERE question=?", (question[0],)).fetchone()
+        conn, cur = utils.get_db() 
+        cur.execute("SELECT * FROM book WHERE question=%s", (question[0],))
+        result = cur.fetchone()
+        cur.close()
         conn.close()
         if result is None:
             raise ValueError("Result is none")

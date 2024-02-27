@@ -74,7 +74,6 @@ function handleTextInput(event, route) {
 
 
 
-
 export function textFom(route) {
     console.log("Route in textForm: ", route)
     // Hide Yes/No buttons and show input field

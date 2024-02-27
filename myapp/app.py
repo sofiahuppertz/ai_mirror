@@ -1,24 +1,54 @@
 from classify_conversation import classify_conversation
-from flask import Flask, render_template, request, jsonify, session, url_for, redirect
-import json
+from flask import Flask, render_template, request, jsonify, session
+from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 import os
 from openai import OpenAI
+import psycopg2
+import redis
 from semantic_similarity import similarity
-import time
 import utils
-
-
-#http://localhost:8000/phpliteadmin.php
-
+import requests
 
 app = Flask(__name__)
-app.secret_key = 'secret'
+
+# Set up the database
+
+# db = SQLAlchemy(app)
+# db_Cred = {
+#     'user': 'postgres',
+#     'pass': 'rosado',
+#     'host': 'localhost',
+#     'name': 'book_db'
+# }
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_Cred["user"]}:{db_Cred["pass"]}@{db_Cred["host"]}/{db_Cred["name"]}'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+
+
+# Set session management to redis servers
+
+app.config['SECRET_KEY'] = "secret"
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+
+Session(app)
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 
-placeholder = ""
+# List of chatbot responses
+
+chatbot_responses = []
+chatbot_responses.append("Do you allow us to add your answer to our database for future editions of the book?")
+chatbot_responses.append("Sorry I can't help you with that request.")
+chatbot_responses.append("I see... Sorry we couldn't help you yet. You can add your question to the book for future editions, would you like that?")
+chatbot_responses.append("How would you like your {} to appear in the book?")
+chatbot_responses.append("Please add a name...")
+chatbot_responses.append("Please add an ocupation or profession...")
+chatbot_responses.append("Add an email to alert you when the new book edition with your added insight is published.")
+chatbot_responses.append("Thank you for your contribution and for helping humans!")
 
 
 @app.after_request
@@ -30,7 +60,6 @@ def after_request(response):
     return response
 
 
-# ROUTE THAT INITALIZES THE PAGE IF IT IS A NEW SESSION
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -68,7 +97,6 @@ def page(page_number):
             session['page_num'] -= 1
 
     # Extract the question and answer from the database
-            
     question, answer = utils.get_question_and_answer(session['page_num'])
 
     return render_template("index.html", question=question, answer=answer)
@@ -98,7 +126,7 @@ def chatbot():
     
     elif (session['path'] == 'B'):
         
-        response = "Do you allow us to add your answer to our database for future editions of the book?"
+        response = chatbot_responses[0]
         
         session['question_type'] = 'B'
         
@@ -106,10 +134,11 @@ def chatbot():
     
     else: 
         
-        response = "Sorry I can't help you with that request."
+        response = chatbot_responses[1]
         
         data = utils.create_data_dict(response, "/", "False", "True")
     
+    session.modified = True
     utils.append_to_history(session, user_message, utils.remove_link(response))
     return jsonify(data)
 
@@ -117,8 +146,9 @@ def chatbot():
 
 @app.route("/handle_question", methods=["POST"])
 def handle_question():
-
-    response = " "
+    
+    response = ""
+    placeholder = ""
     data = request.get_json()
     user_message = data.get('button_value')
 
@@ -130,18 +160,18 @@ def handle_question():
             data = utils.create_data_dict(response, "/", "False", "True")
         
         else:
-            response = "I see... Sorry we couldn't help you yet. You can add your question to the book for future editions, would you like that?"
+            response = chatbot_responses[2]
             
             session['question_type'] = 'B'
             
             data = utils.create_data_dict(response, "/handle_question", "True", "False")
     
-    if session['question_type'] == 'B':
+    elif session['question_type'] == 'B':
 
         if user_message == "Yes":
             placeholder = "question" if session['path'] == 'A' else "answer"
             
-            response = "How would you like your {} to appear in the book?".format(placeholder)
+            response = chatbot_responses[3].format(placeholder)
             
             data = utils.create_data_dict(response, "/colect_data", "False", "False")   
         
@@ -155,38 +185,68 @@ def handle_question():
 
 
 
-
 @app.route("/colect_data", methods=["POST"])
 def colect_data():
-    data = request.get_json()
-    user_message = data.get('user_input')
-    last_request = session['history'][-1]['chatbot_response']
 
-    if last_request == "How would you like your question to appear in the book?":
-        session['query'] = user_message
-        response = "Please add a name..."
+    # Get the user's input and set the response based on the last request
+    data = request.get_json()
+    request = data.get('user_input')
+    previous_request = session['history'][-1]['chatbot_response']
+
+    # Add the question to the database and store the id of the new record. If we already have the person's data, conncet it to the person' s data.
+    if previous_request == "How would you like your question to appear in the book?":
+        session['query'] = request
+
+        response = ""
         data = utils.create_data_dict(response, "/colect_data", "False", "False")
-    elif (last_request == "How would you like your answer to appear in the book?"):
-        session['query'] = user_message
-        response = "Please add a name..."
+
+    elif (previous_request == "How would you like your answer to appear in the book?"):
+        session['query'] = request
+        response = chatbot_responses[4]
         data = utils.create_data_dict(response, "/colect_data", "False", "False")
-    elif (last_request == "Please add a name..."):
-        session['name'] = user_message
-        response = "Please add an ocupation or profession..."
+
+    elif (previous_request == chatbot_responses[4]):
+        session['name'] = request
+        response = chatbot_responses[5]
         data = utils.create_data_dict(response, "/colect_data", "False", "False")
-    elif (last_request == "Please add an ocupation or profession..."):
-        session['ocupation'] = user_message
-        response = "Add an email to alert you when the new book edition with your added insight is published."
+
+    elif (previous_request == chatbot_responses[5]):
+        session['ocupation'] = request
+        response = chatbot_responses[6]
         data = utils.create_data_dict(response, "/colect_data", "False", "False")
+
     else:
-        session['email'] = user_message
-        response = "Thank you for your contribution and for helping humans!"
+        session['email'] = request
+        response = chatbot_responses[7]
         data = utils.create_data_dict(response, "/", "False", "True")
-        utils.add_to_db(session)
-    utils.append_to_history(session, user_message, response)
+        # utils.add_to_db(session)
+    utils.append_to_history(session, request, response)
 
     return jsonify(data)
 
 
+@app.route("/get_data", methods=["GET"])
+def get_data():
+
+    conn, cur = utils.get_db()
+    query = request.get_json()['query']
+    print(query)
+    cur.execute(query)
+    result = cur.fetchone()
+    print(result)
+    
+    cur.close()
+    conn.close()
+    
+    i = 1
+    response = {}
+    for each in result: 
+        response.update({f'Record {i}': list(each)}) 
+        i+= 1
+  
+    return response 
+
+
+
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+    app.run(debug=True)
