@@ -20,9 +20,9 @@ CLASSIFICATION = (
 
 #Function to classify user input
 
-def classify_conversation(client, session, user_message):
+def classify_conversation(client, session, user_message, db_Session):
     
-    question, answer = utils.get_question_and_answer(session['page_num'])
+    question, answer = utils.get_question_and_answer(session['page_num'], db_Session)
     
     context = CLASSIFICATION.format(question=question, answer=answer)
     

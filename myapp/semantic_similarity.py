@@ -1,4 +1,5 @@
 from    ast import literal_eval
+from models import Page
 import  numpy as np
 from    os import remove
 from    pandas import read_csv
@@ -15,9 +16,9 @@ datafile_path = "static/text_3_large_embeddings.csv"
 
 # Load dataframe
 
-def load_dataframe():
+def load_dataframe(Session):
 
-    utils.export_to_csv("SELECT * FROM questions")
+    utils.export_to_csv(Session)
     dataframe = read_csv('temp.csv')    
     remove('temp.csv')
 
@@ -57,22 +58,21 @@ def similarity_search(client, new_question, n=1, pprint=False):
 
 # Function to get message with most similar question
 
-def similarity(client, user_message):
+def similarity(client, Session, user_message):
 
     try:    
         question = similarity_search(client, user_message, 1, False)
         if question is None:
             raise ValueError("Question is none")
         
-        conn, cur = utils.get_db() 
-        cur.execute("SELECT * FROM book WHERE question=%s", (question[0],))
-        result = cur.fetchone()
-        cur.close()
-        conn.close()
-        if result is None:
+        session = Session()
+
+        page = session.query(Page).filter(Page.question == question[0]).first()
+        
+        if page is None:
             raise ValueError("Result is none")
         
-        page = result[0]
+        page = page.id
 
         response = f"Hello! We have a similar question: {question[0]} on page {page},  "
         response += f'<a href="#" id="page-link" data-page-number="{page}">check page here.</a>'
@@ -87,10 +87,10 @@ def similarity(client, user_message):
 
 # Keep this function for later 
 
-def generate_embeddings(client):
+def generate_embeddings(db_Session, client):
 
     # Setup question list 
-    df = load_dataframe()
+    df = load_dataframe(db_Session)
     df['combined'] = (
         "Question: " + df.question.str.strip() + "; Answer: " + df.answer.str.strip()
     )

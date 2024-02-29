@@ -1,13 +1,16 @@
 from classify_conversation import classify_conversation
-from flask import Flask, render_template, request, jsonify, session
+from datetime import timedelta
+from flask import Flask, render_template, request, jsonify, session, url_for
 from flask_session import Session
+from models import init_db, Page, Question, Answer, Person
 import os
 from openai import OpenAI
-import psycopg2
 import redis
 from semantic_similarity import similarity
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 import utils
-import requests
+
 
 app = Flask(__name__)
 
@@ -22,6 +25,9 @@ Session(app)
 openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
+# SQL Alchemy setup
+engine = create_engine('postgresql://postgres:rosado@localhost:5432/book_db')
+db_Session = sessionmaker(bind=engine)
 
 # List of chatbot responses
 
@@ -45,12 +51,16 @@ def after_request(response):
     return response
 
 
+init_db(engine)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
 
     if 'page_num' not in session:
         session['page_num'] = 1
+
+    if 'person_id' not in session:
+        session['person_id'] = None
     
     return page(session['page_num'])
 
@@ -61,9 +71,11 @@ def index():
 @app.route("/page/<int:page_number>", methods=["GET", "POST"])
 def page(page_number):
 
-    # Clean chat history and configurations like path or question type
 
-    utils.clean_chat(session)
+    print(session)
+    # Clean chat history and configurations like path or question type
+    if request.method == "GET": # This if statement is not tested!! I need to fix db management first.
+        utils.clean_chat(session)
 
     # Set the current page number in the session
 
@@ -75,14 +87,14 @@ def page(page_number):
         
         action = request.form.get('action')
         
-        if action == 'next' and session['page_num'] < 94:
+        if action == 'next' and session['page_num'] < utils.get_row_count(db_Session, Page):
             session['page_num'] += 1
         
         elif action == 'previous' and session['page_num'] > 1:
             session['page_num'] -= 1
 
     # Extract the question and answer from the database
-    question, answer = utils.get_question_and_answer(session['page_num'])
+    question, answer = utils.get_question_and_answer(session['page_num'], db_Session)
 
     return render_template("index.html", question=question, answer=answer)
 
@@ -99,12 +111,12 @@ def chatbot():
     # Start the conversation
     if 'path' not in session:
         # Classify the conversation based on the user's input into 3 relevant paths: question, answer, or none of those
-        session['path'] = classify_conversation(client, session, user_message)
+        session['path'] = classify_conversation(client, session, user_message, db_Session)
         
         # If the user's input is a question, run a similarity search
         if (session['path'] == 'A'):
 
-                response = similarity(client, user_message,)
+                response = similarity(client, db_Session, user_message,)
 
                 if response == "An unexpected error ocurred. Please try again later.":
                     data = utils.json_dict(response, "/", "False", "True")
@@ -171,9 +183,12 @@ def chatbot():
             elif session['question_type'] == 'C':
                 
                 # Add the user's input to the database
-                
-                utils.insert_to_table(f"INSERT INTO questions (question) VALUES ('{user_message}')", pprint=True)
-                
+                if session['path'] == 'A':
+                    session['new_row_id'] = utils.insert_row(Session, Question, user_message, session['person_id'])
+
+                elif session['path'] == 'B':
+                    session['new_row_id'] = utils.insert_row(Session, Answer, user_message, session['person_id'])
+
                 # Redirect to collect the user's information
                 if 'name' not in session:
                     
@@ -185,6 +200,7 @@ def chatbot():
                 
                     response = chatbot_responses[7]
                     data = utils.json_dict(response, "/", "False", "True")
+
     # End the conversation if the user doesn't follow the conversation's flow
     else: 
         
@@ -229,41 +245,6 @@ def register_person():
 
     return jsonify(data)
 
-
-
-@app.route("/get_data", methods=["POST"])
-def get_data():
-
-    conn, cur = utils.get_db()
-    query = request.get_json()['query']
-    
-    cur.execute(query)
-    response = cur.fetchone()      
-    cur.close()
-    conn.close()
-  
-    return jsonify({"response": response})
-
-
-
-
-@app.route("/execute_query", methods=["POST"])
-def execute_query():
-    conn, cur = utils.get_db()
-    query = request.get_json()['query']
-
-    try:
-        cur.execute(query)
-        conn.commit()
-        primary_key = cur.lastrowid
-        print(primary_key)
-    except: 
-        return jsonify({"message": "Request could not be completed."})
-    
-    cur.close()
-    conn.close()
-
-    return jsonify({"message": "Query executed successfully.", "primary_key": primary_key})
 
 
 if __name__ == '__main__':
