@@ -1,10 +1,8 @@
 import csv
-import json
 from models import Page
 import os
 import psycopg2
 import re
-import requests
 from sqlalchemy import func
 
 
@@ -96,11 +94,11 @@ def get_row_count(Session, table_class):
     return row_count
 
 
-def export_to_csv(Session):
+def export_to_csv(db_Session):
 
-    session = Session()
+    db_session = db_Session()
 
-    pages = session.query(Page).all()
+    pages = db_session.query(Page).all()
 
     with open('pages.csv', 'w', newline='') as f:
 
@@ -111,20 +109,16 @@ def export_to_csv(Session):
         for page in pages:
             writer.writerow([getattr(page, column.name) for column in Page.table.column])
 
-    session.close()
+    db_session.close()
 
 
-def insert_row(Session, table_class, input, person_id):
+def insert_row(db_session, table_class, **kwargs):
 
-    session = Session()
+    new_row = table_class(**kwargs)
 
-    new_row = table_class(input, person_id)
+    db_session.add(new_row)
 
-    session.add(new_row)
-
-    session.commit()
-
-    session.close()
+    db_session.commit()
     
     return new_row.id
 

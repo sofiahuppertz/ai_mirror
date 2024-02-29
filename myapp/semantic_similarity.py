@@ -80,7 +80,7 @@ def similarity(client, Session, user_message):
             
     except ValueError as e:
         print(e)
-        response = "An unexpected error ocurred. Please try again later."
+        response = "We couldn't find a question similar to yours... Would you like to add your question to our database?"
     
     return response
 

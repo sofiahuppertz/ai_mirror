@@ -28,10 +28,15 @@ class Person(Base):
 
     questions = relationship("Question", backref="person")
 
-    def __init__(self, name, occupation, email):
+    def __init__(self, name):
         self.name = name
+
+    def set_occupation(self, occupation):
         self.occupation = occupation
+    
+    def set_email(self, email):
         self.email = email
+
 
 
 class Question(Base):
@@ -39,21 +44,34 @@ class Question(Base):
 
     id = Column(Integer, primary_key=True)
     question = Column(String)
+    answer = Column(String)
     person_id = Column(Integer, ForeignKey('people_table.id'))
 
     def __init__(self, question, person_id):
         self.question = question
+        self.answer = None
         self.person_id = person_id
+
+    def change_person_id(self, new_id):
+        self.person_id = new_id
 
 
 class Answer(Base):
     __tablename__ = 'answers_table'
 
     id = Column(Integer, primary_key=True)
-    question = Column(String)
-    ansswer = Column(String)
+    answer = Column(String)
     person_id = Column(Integer, ForeignKey('people_table.id'))
-    book_id = Column(Integer, ForeignKey('pages_table.id'))
+    page_id = Column(Integer, ForeignKey('pages_table.id'))
+
+    def __init__(self, answer, person_id, page_id):
+        self.answer = answer
+        self.person_id = person_id
+        self.page_id = page_id
+    
+    def change_person_id(self, new_id):
+        self.person_id = new_id
+
 
 def init_db(engine):
     Base.metadata.create_all(engine)
