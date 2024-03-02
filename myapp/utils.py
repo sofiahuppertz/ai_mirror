@@ -1,21 +1,10 @@
 import csv
-from models import Page
-import os
-import psycopg2
+from models import Page, Question, Answer, Person
 import re
 from sqlalchemy import func
 
 
-# Backend Fronted communication
-
-def json_dict(response, next_route, buttons, reset_page):
-    dict = {
-        "server_response" : response,
-        "route": next_route,
-        "buttons": buttons,
-        "reset_page": reset_page
-    }
-    return dict
+# Function to remove links 
 
 def remove_link(html_string):
     pattern = r'<a[^>]*>(.*%s)</a>'
@@ -43,8 +32,10 @@ def clean_chat(session):
 
 
 def append_to_history(session, user_message, chatbot_response):
+    
     if 'history' not in session:
         session['history'] = []
+    
     session['history'].append({
         'chatbot_response' : chatbot_response,
         'user_message' : user_message
@@ -52,28 +43,16 @@ def append_to_history(session, user_message, chatbot_response):
     session.modified = True
     return
 
-# Database utils
 
-def get_db():
+# DATABASE UTILS
 
-    password = os.getenv("POSTGREE_KEY")
-    conn = psycopg2.connect(
-        dbname='book_db',
-        user='postgres',
-        password=password,
-        host='localhost',
-        port='5432'
-    )
-    cur = conn.cursor()
-    return conn, cur
+def get_question_and_answer(page_id, db_Session):
 
+    db_session = db_Session()
 
+    page = db_session.query(Page).get(page_id)
 
-def get_question_and_answer(page_id, Session):
-
-    session = Session()
-
-    page = session.query(Page).get(page_id)
+    db_session.close()
 
     if page is not None:
         return page.question, page.answer
@@ -84,12 +63,14 @@ def get_question_and_answer(page_id, Session):
 
 # Funtion to count rows of a table
     
-def get_row_count(Session, table_class):
+def get_row_count(db_Session, table_class):
 
     # Open secure connection
-    session = Session()
+    db_session = db_Session()
     
-    row_count = session.query(func.count(table_class.id)).scalar()
+    row_count = db_session.query(func.count(table_class.id)).scalar()
+
+    db_session.close()
     
     return row_count
 
@@ -122,6 +103,30 @@ def insert_row(db_session, table_class, **kwargs):
     
     return new_row.id
 
+def connect_to_person_id(session, db_session):
+ 
+    print("ID: ")
+    print(session['person_id'])
+    if session['path'] == 'A':
+            question = db_session.query(Question).get(session['new_row_id'])
+            question.change_person_id(new_id=session['person_id'])
+        
+    elif session['path'] == 'B':
+        answer = db_session.query(Answer).get(session['new_row_id'])
+        answer.change_person_id(new_id=session['person_id'])
+    
+    db_session.commit()
+
+
+def add_person_data(person_id, db_session, method, input):
+    
+    person = db_session.query(Person).get(person_id)
+
+    getattr(person, method)(input)
+
+    db_session.commit()
+
+    return
 
 # OpenAI utils
 

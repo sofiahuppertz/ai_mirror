@@ -1,4 +1,5 @@
 from    ast import literal_eval
+from chatbot_reponses import chatbot_responses
 from models import Page
 import  numpy as np
 from    os import remove
@@ -80,7 +81,7 @@ def similarity(client, Session, user_message):
             
     except ValueError as e:
         print(e)
-        response = "We couldn't find a question similar to yours... Would you like to add your question to our database?"
+        response = chatbot_responses[8]
     
     return response
 
