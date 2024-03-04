@@ -54,6 +54,9 @@ class Question(Base):
 
     def change_person_id(self, new_id):
         self.person_id = new_id
+    
+    def add_answer(self, answer):
+        self.answer = answer
 
 
 class Answer(Base):
