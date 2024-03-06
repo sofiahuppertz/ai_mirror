@@ -44,6 +44,10 @@ def handle_first_response(client, session, input, db_Session ):
             return prepare_json(session, input, response, 'A', "/chatbot", "True", "False")
 
     elif session['path'] == 'B' :
+        # Add page number to session
+        session['hold_page'] = session['page_num']
+        session.modified = True
+        print("HOLD PAGE: ", session['hold_page'])
         return prepare_json(session, input, chatbot_responses[0], 'B', "/chatbot" , "True", "False")
 
     else:
@@ -65,6 +69,7 @@ def handle_next_response(session, input, db_Session):
 
         if  input == "Yes":
             placeholder = "question" if session['path'] == 'A' else "answer"
+
             return prepare_json(session, input, chatbot_responses[3].format(placeholder), 'C', "/chatbot", "False", "False")
     # "How would you like your question/answer to appear in the book?" 
     elif question_type == 'C':
@@ -74,7 +79,6 @@ def handle_next_response(session, input, db_Session):
         
         if session['path'] == 'A':
             if 'new_row_id' not in session:
-                
                 session['new_row_id'] = utils.insert_row(db_session, Question, question=input, person_id=session['person_id'])
                 db_session.close()
                 return prepare_json(session, input, chatbot_responses[10], 'D', "/chatbot", "True", "False")
@@ -88,7 +92,8 @@ def handle_next_response(session, input, db_Session):
                 return register_person(session, input, question_type)
             
         elif session['path'] == 'B':
-            session['new_row_id'] = utils.insert_row(db_session, Answer, answer=input, person_id=session['person_id'], page_id=session['page_num'])
+            print("HOLD PAGE: ", session['hold_page'])
+            session['new_row_id'] = utils.insert_row(db_session, Answer, answer=input, person_id=session['person_id'], page_id=session['hold_page'])
         
             db_session.close() 
         

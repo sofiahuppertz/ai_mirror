@@ -11,25 +11,6 @@ def remove_link(html_string):
     return re.sub(pattern, '', html_string)
 
 
-# Session utils
-
-def clean_chat(session):
-    if 'path' in session:
-        session.pop('path')
-    if 'question_type' in session:
-        session.pop('question_type')
-    if 'history' in session:
-        session.pop('history')
-    if 'query' in session:
-        session.pop('query')
-    if 'question_type' in session:
-        session.pop('question_type')
-    if 'new_row_id' in session:
-        session.pop('new_row_id')
-    session.modified = True
-    return
-
-
 
 def append_to_history(session, user_message, chatbot_response):
     
@@ -105,8 +86,6 @@ def insert_row(db_session, table_class, **kwargs):
 
 def connect_to_person_id(session, db_session):
  
-    print("ID: ")
-    print(session['person_id'])
     if session['path'] == 'A':
             question = db_session.query(Question).get(session['new_row_id'])
             question.change_person_id(new_id=session['person_id'])

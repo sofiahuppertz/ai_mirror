@@ -47,9 +47,6 @@ def index():
     if 'page_num' not in session:
         session['page_num'] = 1
 
-    if 'person_id' not in session:
-        session['person_id'] = None
-
     session.modified = True
     
     return page(session['page_num'])
@@ -60,9 +57,6 @@ def index():
 
 @app.route("/page/<int:page_number>", methods=["GET", "POST"])
 def page(page_number):
-
-    # Clean chat history and configurations like path or question type
-    utils.clean_chat(session)
 
     # Set the current page number in the session
 
@@ -101,10 +95,15 @@ def chatbot():
     
     input = data.get('user_input')
 
+    # Make sure session['person_id'] is set to none if it doesn't exist (We need this variable to store other rows)
+
+    if 'person_id' not in session:
+        session['person_id'] == None
+        session.modified = True
+    
     # Start the conversation
     if 'path' not in session:
 
-        utils.clean_chat(session)
         return chatbot_logic.handle_first_response(client, session, input, db_Session)
     
     elif 'question_type' in session:
@@ -162,6 +161,39 @@ def register_person():
     
     return jsonify(dict)
 
+
+# ROUTE THAT HANDLES THE RESET OF THE CHAT
+
+@app.route("/reset_chat", methods=["POST"])
+def reset_chat():
+
+    if 'path' in session:
+        session.pop('path')
+    if 'question_type' in session:
+        session.pop('question_type')
+    if 'history' in session:
+        session.pop('history')
+    if 'query' in session:
+        session.pop('query')
+    if 'question_type' in session:
+        session.pop('question_type')
+    if 'new_row_id' in session:
+        session.pop('new_row_id')
+    session.modified = True
+    return jsonify({"response": "Chat reset"})
+
+
+
+# ROUTE THAT PASSES HISOTRY OF THE CHAT TO THE FRONTEND
+
+@app.route("/get_previous_chat", methods=["POST"])
+def get_previous_chat():
+    if 'history' in session:
+        history = session['history']
+        print(history)
+        return jsonify({"response": history})
+    else:
+        return jsonify({"response": "None"})
 
 
 if __name__ == '__main__':

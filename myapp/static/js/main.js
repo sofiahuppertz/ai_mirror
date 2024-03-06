@@ -1,29 +1,47 @@
-
 import * as utils from './utils.js';
-import * as chatbot_logic from './chatbot_logic.js';
 import * as chatbot_ui from './chatbot_ui.js';
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
-    // Empty chat history: Is this really necessary now that I am ending the chat with a redirection from the server?   
-    let chatHistory = document.getElementById('chat-history');
-    while (chatHistory.firstChild) {
-        chatHistory.removeChild(chatHistory.firstChild);
-    }
+    // Add to the html all the divs of the chatbot
+    utils.add_previous_chat();
 
-    // Hide chat and show before-chat buttons: Idem
-    document.getElementById('before-chat').style.display = 'block';
-    document.getElementById('chat').style.display = 'none';
+    // Add event listener totrigger the chatbot
+    const chatbot_button = document.getElementById('chatbot-button');
+    const chatbot_container = document.getElementById('chatbot-container');
+    const close_button = document.getElementById('close-chatbot-button');
 
-    // Maybe here is where it shoul start...
-    const chatbot_triggers = document.querySelectorAll('#before-chat button');
+    // Display chatbot 
+    chatbot_button.addEventListener('click', (event) => {
+        
+        event.preventDefault();
+        chatbot_container.style.display = 'flex';
+        chatbot_button.style.display = 'none';
 
-    chatbot_triggers.forEach(button => {
-        button.addEventListener('click', (event) => {
+        // Close chatbot when close button is clicked
+        close_button.addEventListener('click', (event) => {
             event.preventDefault();
-            chatbot_logic.first_chatbot_message(button);
-            chatbot_ui.textFom('/chatbot');
+            chatbot_container.style.display = 'none';
+            chatbot_button.style.display = 'block';
         }, {once: true});
+
+        // Check if there's any saved state in localStorage
+        let currentFunction = localStorage.getItem('currentFunction');
+        let nextRoute = localStorage.getItem('nextRoute');
+
+        console.log("currentFunction: ", currentFunction);
+        console.log("nextRoute: ", nextRoute);
+        // Go to saved state in conversation
+        if (currentFunction && nextRoute)
+        {
+            chatbot_ui.resume_chat(currentFunction, nextRoute);
+        }
+        // Start chat from the beginning
+        else
+        {
+            chatbot_ui.start_chat();
+        }
+        return;
     });
     
 });

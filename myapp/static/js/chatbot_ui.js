@@ -1,41 +1,18 @@
 
-import * as chatbot_logic from './chatbot_logic.js';
+
 import * as utils from './utils.js';
 
-// FUNCTION FOR HANDLING RESET BUTTON
 
-export function resetButtonForm() {
-
-    const binary_form = document.getElementById('yes-no-form');
-    const user_input = document.getElementById('user-input');
-    const resetChat = document.getElementById('reset-chat');
-    
-    binary_form.style.display = 'none';
-    user_input.style.display = 'none';
-    resetChat.style.display = 'flex';
-
-    resetChat.addEventListener('submit', (event) => {
-        event.preventDefault(); // Prevent form submission
-        utils.postData('/', {})
-        .then(response => {
-            if (response.ok) {
-                window.location.href = '/';
-            }
-        });
-    });
-}
-
-// FUNCTION FOR HANDLING SERVER RESPONSE (COMMON TO BOTH FORMS)
+// FUNCTION FOR HANDLING SERVER RESPONSE AND REDIRECT TO NEXT FORM
 
 function handleServerRespone (data) {
     // Append server response to chat history
-    utils.send_message(data.server_response, 'chatbot-message');
+    utils.send_message(data.server_response, 'chatbot_response');
 
     console.log("Route in handleServerResponse: ", data.route)
     // Check if chatbot should end conversation
     if (data.reset_page === "True") {
-        //return resetButtonForm();
-        return resetButtonForm();
+        return endConversation();
     }
     // Setup next form (Input field or Yes/No buttons)
     if (data.buttons === "True") {
@@ -44,7 +21,6 @@ function handleServerRespone (data) {
     else {
         return textFom(data.route);
     }
-
 }
 
 // FUNCTIONS FOR HANDLING TEXT FORM
@@ -52,6 +28,7 @@ function handleServerRespone (data) {
 function handleTextInput(event, route) {
 
     event.preventDefault();
+
 
     console.log("Route in handleTextInput: ", route)
     // Check if user input is empty
@@ -61,12 +38,13 @@ function handleTextInput(event, route) {
     }
 
     // Append user input to chat history
-    utils.send_message(userInput, 'user-message');
+    utils.send_message(userInput, 'user_message');
 
     // Clear user input field
     document.querySelector('#userInput').value = '';
 
     // Send user input to server and handle server response
+    console.log(userInput);
     utils.postData(route, {user_input: userInput})
     .then(response => response.json())
     .then(data => handleServerRespone(data))
@@ -75,7 +53,12 @@ function handleTextInput(event, route) {
 
 
 export function textFom(route) {
+    
     console.log("Route in textForm: ", route)
+
+    //Enable reset button
+    resetButtonForm();
+
     // Hide Yes/No buttons and show input field
     const binary_form = document.getElementById('yes-no-form');
     const user_input = document.getElementById('user-input');
@@ -83,8 +66,13 @@ export function textFom(route) {
     binary_form.style.display = 'none';
     user_input.style.display = 'flex';
 
+    // Store information in localStorage
+    localStorage.setItem('currentFunction', 'textForm');
+    localStorage.setItem('nextRoute', route);
+
+
     // Add event listener to input field and enter key
-    const inputBtn = document.querySelector('#input-container button');
+    const inputBtn = document.querySelector('#user-input button');
     inputBtn.addEventListener('click', function(event) {
         handleTextInput(event, route);
     } , {once: true});
@@ -127,6 +115,11 @@ export function binaryForm(route) {
     binary_form.style.display = 'flex';
     user_input.style.display = 'none';
 
+    // Add to localStorage the info:
+    localStorage.setItem('currentFunction', 'binaryForm');
+    localStorage.setItem('nextRoute', route);
+
+
     // Setup buttons UI
     setupButton('.yes-button', 'btn-success', 'btn-dark');
     setupButton('.no-button', 'btn-danger', 'btn-dark');
@@ -139,7 +132,7 @@ export function binaryForm(route) {
         let buttonValue = event.submitter.value;
 
         // Append button value to chat history
-        utils.send_message(buttonValue, 'user-message');
+        utils.send_message(buttonValue, 'user_message');
 
         // Disable buttons
         document.querySelector('.yes-button').disabled = true;
@@ -150,12 +143,136 @@ export function binaryForm(route) {
         .then(response => response.json())
         .then(data => handleServerRespone(data));
     }, {once: true});
+
+    //Enable reset button
+    resetButtonForm();
+}
+
+// FUNCTION TO RESUME CHAT
+
+export function resume_chat(currentFunction, nextRoute) {
+    
+    console.log("Inside resume_chat");
+    // Hide "conversation starter" buttons and show chat input fields
+    document.getElementById('before-chat').style.display = 'none';
+    document.getElementById('chat-inputs').style.display = 'flex';
+
+    // Clear local storage
+    localStorage.removeItem('currentFunction');
+    localStorage.removeItem('nextRoute');
+    
+    // Call the function that was interrupted
+    if (currentFunction == 'textForm') {
+        console.log("calling textForm");
+        textFom(nextRoute);
+    }
+    else if (currentFunction == 'binaryForm') {
+        console.log("calling binaryForm");
+        binaryForm(nextRoute);
+    }
+    else if (currentFunction == 'endConversation') {
+        console.log("calling endConversation");
+        endConversation();
+    }
+}
+
+// FUNCTION TO START THE CHAT
+
+export function start_chat(){ 
+
+    console.log("Inside start_chat");
+    // Hide chat and show before-chat buttons: Idem
+    document.getElementById('before-chat').style.display = 'flex';
+    document.getElementById('chat-inputs').style.display = 'none';
+
+    // Maybe here is where it shoul start...
+    let chatbot_triggers = document.querySelectorAll('#before-chat button');
+
+    // Clone the buttons without their event listeners and replace the original buttons with the clones
+    chatbot_triggers.forEach(button => {
+        let clone = button.cloneNode(true);
+        button.parentNode.replaceChild(clone, button);
+    });
+
+    // Update chatbot_triggers to get the cloned buttons
+    chatbot_triggers = document.querySelectorAll('#before-chat button');
+
+    chatbot_triggers.forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            first_chatbot_message(button);
+            textFom('/chatbot');
+        }, {once: true});
+    });
+    return;
+}
+
+export function first_chatbot_message(button) {
+
+    let chatbotMessage;
+
+    document.getElementById('before-chat').style.display = 'none';
+    document.getElementById('chat-inputs').style.display = 'flex';
+    
+    if (button.value == 'client_answer') {
+        chatbotMessage = "...Thanks for your help. Answers are limited to 270 characters.";
+    }
+    else if (button.value == 'client_question') {
+        chatbotMessage = "Please add your question on the future of A.I.";
+    }
+    utils.send_message(chatbotMessage, 'chatbot_response');
+}
+
+
+// FUNCTIONS FOR ENDING THE CHAT 
+
+export function resetButtonForm() {
+
+    const resetChat = document.getElementById('reset-chat');
+
+    resetChat.addEventListener('click', function(event) {
+        // Clear the chat history in the DOM
+        let chatHistory = document.querySelector('#chat-history');
+        while (chatHistory.firstChild) {
+            chatHistory.removeChild(chatHistory.firstChild);
+        }
+        // Send a POST request to the server to clear the chat history server-side
+        utils.postData('/reset_chat', {})
+            .then(response => response.json())
+            .then(data => { 
+                localStorage.removeItem('currentFunction');
+                localStorage.removeItem('nextRoute');
+                start_chat();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }, {once: true});
+}
+
+
+export function endConversation() {
+
+    localStorage.setItem('currentFunction', 'endConversation');
+    localStorage.setItem('nextRoute', ' ')
+
+    //Enable reset button
+    resetButtonForm();
+
+    // Hide Yes/No buttons and input field, only show the reset button
+    const binary_form = document.getElementById('yes-no-form');
+    const user_input = document.getElementById('user-input');
+    const resetChat = document.getElementById('reset-chat');
+    
+    binary_form.style.display = 'none';
+    user_input.style.display = 'none';
+    resetChat.style.display = 'flex';
 }
 
 // FUNCTION FOR HANDLING PAGE LINKS
 
 export function handlePageLink () {
-    document.querySelector('#chat').addEventListener('click', function(event) {
+    document.querySelector('#chatbot-container').addEventListener('click', function(event) {
         if (event.target.matches('#page-link')) {
 
             event.preventDefault();
