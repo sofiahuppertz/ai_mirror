@@ -33,6 +33,7 @@ def register_person(session, input, question_type):
 
 def handle_first_response(client, session, input, db_Session ):
     
+
     session['path'] = classify_conversation(client, session, input, db_Session)
 
     if session['path'] == 'A':

@@ -11,7 +11,7 @@
 
 <body>
     <div id="header">
-        <h1>AI MIRROR by Sebastian Errazuriz </h1>
+        <img src="https://images.squarespace-cdn.com/content/v1/5cf56bb2622f1700010563b4/f5d72824-d964-48f2-806c-9b663ee42a66/Ai+maze+book+3.png?format=1000w" style="width: 100%;">
     </div>
     <div id="book-container">
         <div id="book">
@@ -25,20 +25,20 @@
                    </div>
                 </div>
                 <div class="page-buttons">
-                    <button type="submit" class="btn btn-outline-dark" name="action" value="previous">Previous Page</button>
-                    <button type="submit" class="btn btn-outline-dark" name="action" value="next">Next Page</button>
+                    <button type="submit" class="btn" name="action" value="previous">&#8592;</button>
+                    <button type="submit" class="btn" name="action" value="next">&#8594;</button>
                 </div>
             </form>
         </div>
     </div>
     <div>
         <form id="chatbot-button">
-            <button type="submit" class="btn" name="action" value="chatbot"><img src="../static/chatbot.jpg" style="max-width: 80px;"></button>
-    </div>
+            <button type="submit" class="btn" name="action" value="chatbot"><img src="../static/chatbot.png" style="max-width: 40px;"></button>
+        </div>
     <div id="chatbot-container">
         <div id="header-section">
             <div id="close-chatbot-button">
-                <button type="submit" class="btn" name="action" value="close-chatbot">x</button>
+                <button id="shrinkButton" type="submit" name="action" value="close-chatbot"></button>
             </div>
         </div>
         <div id="chatbot-title">
@@ -48,191 +48,265 @@
         <div id="chat-history">
             <!-- Chat history will be displayed here -->
         </div>
+        
         <div id="input-container">
+            <div style="height:1px; background-color: rgba(204, 204, 204, 0.5); margin-bottom: 5px;"></div>
             <div id="before-chat">
-                <form action="/chatbot" method="POST" class="conversation-starters">
-                    <button type="submit" class="btn btn-outline-dark" name="action" value="client_answer">ADD TO THIS ANSWER</button>
-                    <button type="submit" class="btn btn-outline-dark" name="action" value="client_question">HAVE A NEW QUESTION?</button>
+                <form action="/chatbot" method="POST">
+                    <button type="submit" class="btn starters" name="action" value="client_answer">ADD TO THIS ANSWER</button>
+                    <button type="submit" class="btn starters" name="action" value="client_question">HAVE A NEW QUESTION?</button>
                 </form>
             </div>
+            
             <div id="chat-inputs">
                 <div id="reset-chat">
-                    <button type="submit" class="btn btn-danger reset-button" name="button" value="reset">Reset Chat</button>
+                    <button type="submit" class="btn btn-danger reset-button" name="button" value="reset">Reset</button>
                 </div>
+
                 <form action="/chatbot" method="POST" id="user-input">
-                    <textarea rows="2" id="userInput" name="userInput"></textarea>
+                    <textarea rows="1" id="userInput" name="userInput" autofocus></textarea>
                     <button type="submit" class="btn" name="action" value="client_input">
-                        <img src="../static/send-icon-2048x1863-u8j8xnb6.png" width="28px" alt="Send">
+                        <img src="../static/send.png" width="30px" title="Message icônes créées par onlyhasbi - Flaticon">
                     </button>
                 </form>
                 <form action="/chatbot" method="POST" id="yes-no-form">
-                    <button type="submit" class="btn btn-lg btn-success yes-button" name="button" value="Yes">Yes</button>
-                    <button type="submit" class="btn btn-lg btn-danger no-button" name="button" value="No">No</button>
+                    <button type="submit" class="btn btn-lg yes-button" name="button" value="Yes">Yes</button>
+                    <button type="submit" class="btn btn-lg no-button" name="button" value="No">No</button>
                 </form>
             </div>
         </div>
     </div>
     <style>
 
+        #header {
+            text-align: center;
+            padding-top: 20px;
+        }
+        #book-container{
+            padding: 15%;
+            padding-top: 5%;
+            padding-bottom: 10%;
+            display: block;
+        }
         
+        #answer {
+            padding-top: 0px;
+            font-size: 18px;
+        }
+        .btn {
+            border-radius: 30px;
+        }
+        .page-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .page-buttons button {
+            background-color: rgba(14, 14, 14, 0.641);
+            border: none;
+            color: white;
+        }
 
-                #header {
-                    text-align: center;
-                    padding-top: 20px;
-                }
-
-                #book-container{
-                    padding: 15%;
-                    padding-top: 5%;
-                    padding-bottom: 10%;
-                    display: block;
-                }
-                
-                #answer {
-                    padding-top: 0px;
-                    font-size: 18px;
-                }
-
-                .btn {
-                    border-radius: 30px;
-                }
-
-                .page-buttons {
-                    display: flex;
-                    justify-content: center;
-                    gap: 15px;
-                }
-
-                #chatbot-button {
-                    position: fixed;
-                    left: 77vw;
-                    bottom: 1vw;
-                    z-index: 1;
-                }
-
-                
-                #chatbot-container {
-                    background-color: rgb(255, 254, 254);
-                    
-                    border-radius: 15px;
-                    box-shadow: 0px 0px 10px rgba(33, 33, 33, 0.5); 
-                    height: 90%;
-                    width: 90%;
-                    top: 5%; 
-                    left: 0;
-                    right: 0;
-                    margin: 0 auto;
-                    padding: 5px;
-                    padding-bottom: 15px;
-                    position: fixed;
-                    display: none;
-                    flex-direction: column;
-                    align-items: center;   
-                    overflow: auto;
-                }
-                
-                #header-section {
-                    display: flex;
-                    width: 100%;
-                    justify-content: flex-start;
-                }
-                
-                .spacer {
-                    flex-grow: 1;
-                }
-                
-                #close-chatbot-button {
-                    top: 1vw;
-                    left: 1vw;
-                    color: rgb(44, 44, 44);
-                    border-color: #ffc107;
-                    background-color: #ffc107;
-                    border-radius: 15px;
-                }
-                
-                #chatbot-title {
-                    text-align: center;
-                    width: 100%;
-                    margin-top: 5px;
-                }
-                
-                #input-container {
-                    width: 100%;
-                    margin-top: auto;
-                }
-
-                #before-chat {
-                    justify-content: space-evenly;
-                }
-               
-                #chat-history { 
-                    overflow-y: auto;
-                    border: 1px solid transparent; /* Invisible border */
-                    border-radius: 30px;
-                    display: block;
-                    flex-direction: column;
-                    justify-content: flex-end;
-                    align-items: center;
-                }
+        #chatbot-button {
+            position: fixed;
+            left: 77vw;
+            bottom: 5vw;
+            z-index: 1;
+        }
+        
+        #chatbot-container {
+            background-color: rgb(255, 254, 254);
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px rgba(33, 33, 33, 0.5); 
+            height: 90%;
+            width: 90%;
+            max-width: 500px;
+            top: 5%; 
+            left: 0;
+            right: 0;
+            margin: 0 auto;
             
-                .chatbot_response {
-                    float: left;
-                    clear: both;
-                    border: 1px solid black;
-                    border-radius: 20px;
-                    margin: 10px;
-                    margin-right: 80px;
-                    padding: 10px;
-                }
             
-                .user_message {
-                    float: right;
-                    clear: both;
-                    border: 1px solid black;
-                    border-radius: 15px;
-                    margin: 10px;
-                    margin-left: 80px;
-                    padding: 10px;
-                }
+            position: fixed;
+            display: none;
+            flex-direction: column;
+            align-items: center;   
+            overflow: auto;
+        }
+        /* On screens that are 600px or less, center the chatbot container */
+        @media screen and (max-width: 600px) {
+            #chatbot-container {
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+            }
+        }
+        /* On screens that are larger than 600px, align the chatbot container to the right */
+        @media screen and (min-width: 601px) {
+            #chatbot-container {
+                left: auto;
+                right: 0;
+                margin: 15px;
+            }
+        }
+        
+        #header-section {
+            display: flex;
+            width: 100%;
+            justify-content: flex-start;
+        }
+        
+        .spacer {
+            flex-grow: 1;
+        }
             
-                #chat-inputs {
-                    display: none;
-                    justify-content: flex-start;
-                    align-items: center;
-                }
-                .yes-button {
-                    margin-right: 5px;
-                    font-size: 20px;
-                }
-            
-                .no-button {
-                    margin-left: 5px;
-                    font-size: 20px;
-                }   
-                .reset-button {
-                    margin: 10px;
-                    height: max-content;
-                    border-radius: 15px;
-                }
-                
-                #user-input {
-                    flex-grow: 1;
-                }
-
-                #userInput {
-                    width: 300px;
-                    border-radius: 15px;
-                    background-color:rgb(252, 252, 247);
-                    border: 1px solid rgb(0, 0, 0);
-                }
-            
-                #yes-no-form {
-                    display: none;
-                    justify-content: center;
-                }
-
-            
-
+        #close-chatbot-button {
+            top: 1vw;
+            left: 1vw;
+        }
+        #shrinkButton {
+            margin: 10px;
+            background-color: rgb(255, 204, 0); /* Yellow background */
+            border-radius: 50%;       /* Circular shape */
+            width: 20px;              /* Width of the button */
+            height: 20px;             /* Height of the button */
+            border: none;             /* Remove default border */
+            cursor: pointer;          /* Change cursor on hover */
+            display: flex;            /* Flexbox for centering the line */
+            justify-content: center;  /* Center horizontally */
+            align-items: center;      /* Center vertically */
+        }
+        #shrinkButton::after {
+            content: '';             /* Pseudo-element for the line */
+            display: block;
+            width: 60%;              /* Width of the horizontal line */
+            height: 2px;             /* Height of the horizontal line */
+            background-color: black; /* Color of the line */
+            opacity: 0;              /* Initially invisible */
+            transition: opacity 0.3s ease; /* Smooth transition for the line */
+        }
+        #shrinkButton:hover::after, #shrinkButton:active::after {
+            opacity: 1; /* Make the line visible on hover and active */
+        }
+        
+        #chatbot-title {
+            text-align: center;
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        #input-container {
+            background-color: rgba(204, 204, 204, 0.5);
+            width: 100%;
+            margin-top: auto;
+            padding-bottom: 12px;
+        }
+        #before-chat {
+            justify-content: space-evenly;
+        }
+        .starters {
+            background-color: white;
+            border: white;
+        }
+           
+        #chat-history { 
+            overflow-y: auto;
+            border: 1px solid transparent; /* Invisible border */
+            border-radius: 30px;
+            display: block;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+    
+        .chatbot_response {
+            float: left;
+            clear: both;
+            background-color: rgba(204, 204, 204, 0.5);
+            border-radius: 20px;
+            margin: 10px;
+            margin-right: 80px;
+            padding: 10px;
+        }
+    
+        .user_message {
+            float: right;
+            clear: both;
+            background-color: rgba(204, 204, 204, 0.5);
+            border-radius: 15px;
+            margin: 10px;
+            margin-left: 80px;
+            padding: 10px;
+        }
+    
+        #chat-inputs {
+            display: none;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .yes-button {
+            margin-right: 5px;
+            font-size: 20px;
+            background-color: white;
+        }
+    
+        .no-button {
+            margin-left: 5px;
+            font-size: 20px;
+            background-color: white;
+        }   
+        .reset-button {
+            margin: 10px;
+            height: max-content;
+            border-radius: 15px;
+        }
+        
+        #user-input {
+            flex-grow: 1;
+        }
+        #userInput {
+            width: max-content;
+            flex-grow: 1;
+            border-radius: 15px;
+            background-color:rgb(252, 252, 247);
+            border: 1px solid rgba(204, 204, 204, 0.5);
+            outline: none;
+        }
+    
+        #yes-no-form {
+            display: none;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        #typingIndicator {
+            float: left;
+            clear: both;
+            margin: 10px;
+            margin-right: 80px;
+            padding: 10px;
+        }
+        #typingIndicator span {
+            display: inline-block;
+            width: 6px; 
+            height: 6px;
+            background-color: rgba(33, 33, 33, 0.651);
+            border-radius: 50%;
+            margin: 3px;
+            animation: dot 1.5s infinite;
+        }
+        #typingIndicator span:nth-child(1) {
+            animation-delay: 0s;
+        }
+        #typingIndicator span:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        #typingIndicator span:nth-child(3) {
+            animation-delay: 1s;
+        }
+        @keyframes dot {
+            0%, 40% { opacity: 0; }
+            50%, 100% { opacity: 1; }
+        }
     </style>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

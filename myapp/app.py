@@ -98,7 +98,7 @@ def chatbot():
     # Make sure session['person_id'] is set to none if it doesn't exist (We need this variable to store other rows)
 
     if 'person_id' not in session:
-        session['person_id'] == None
+        session['person_id'] = None
         session.modified = True
     
     # Start the conversation
@@ -191,9 +191,10 @@ def get_previous_chat():
     if 'history' in session:
         history = session['history']
         print(history)
+        print(type(history))
         return jsonify({"response": history})
     else:
-        return jsonify({"response": "None"})
+        return jsonify({"response": None})
 
 
 if __name__ == '__main__':

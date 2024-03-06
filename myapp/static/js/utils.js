@@ -10,16 +10,25 @@ export function send_message(message, className){
     chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 
-//FUCNTION TO SEND DATA TO SERVER
+// FUNCTION TO CREATE TYPING INDICATOR
 
-export function postData(route, data) {
+export function createTypingIndicator() {
+    let typingIndicator = document.createElement('div');
+    typingIndicator.id = 'typingIndicator';
+    typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+    let chatHistory = document.querySelector('#chat-history');
+    chatHistory.appendChild(typingIndicator);
+}
 
-    console.log('clearing local storage');
-    localStorage.removeItem('currentFunction');
-    localStorage.removeItem('nextRoute');
+//FUNNTION TO SEND DATA TO SERVER
 
+export function postData(route, data, clearStorage=true) {
 
-    console.log('route inside PostData: ', route)
+    if (clearStorage) {
+        localStorage.removeItem('currentFunction');
+        localStorage.removeItem('nextRoute');
+    }
+
     return fetch(route, {
         method: 'POST',
         headers: {
@@ -29,18 +38,20 @@ export function postData(route, data) {
     });
 }
 
-
-
 // FUNCTION TO APPEND PREVIOUS CHATS
 
 export function add_previous_chat(){
     console.log('add_previous_chat');
+
     fetch('/get_previous_chat', {
         method: 'POST'
     })
     .then(response => response.json())
     .then(data => {
         let history = data['response'];
+        if (history === null) {
+            return;
+        }
         for (let i = 0; i < history.length ; i++) {
             let user_message = history[i]['user_message'];
             let chatbot_response = history[i]['chatbot_response'];
@@ -54,4 +65,17 @@ export function add_previous_chat(){
             }
         }
     })
+}
+
+// FUNCTION TO CHECK INPUT ISN'T EMPTY
+
+export function isInputNotEmpty() {
+
+    console.log("inside isInputNotEmpty");
+    const userInput = document.getElementById('userInput');
+    if (userInput && userInput.value && userInput.value.trim() !== '') {
+        return true;
+    }
+    
+    return false;
 }

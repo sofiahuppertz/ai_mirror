@@ -1,6 +1,8 @@
 import * as utils from './utils.js';
 import * as chatbot_ui from './chatbot_ui.js';
 
+
+
 document.addEventListener('DOMContentLoaded', (event) => {
 
     // Add to the html all the divs of the chatbot
@@ -17,13 +19,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         event.preventDefault();
         chatbot_container.style.display = 'flex';
         chatbot_button.style.display = 'none';
-
-        // Close chatbot when close button is clicked
-        close_button.addEventListener('click', (event) => {
-            event.preventDefault();
-            chatbot_container.style.display = 'none';
-            chatbot_button.style.display = 'block';
-        }, {once: true});
 
         // Check if there's any saved state in localStorage
         let currentFunction = localStorage.getItem('currentFunction');
@@ -43,7 +38,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
         return;
     });
-    
+
+    // Close chatbot when close button is clicked
+    close_button.addEventListener('click', (event) => {
+
+        event.preventDefault();
+
+        const inputBtn = document.querySelector('#user-input button');
+        const userInputElem = document.getElementById('userInput');
+        const binary_form = document.getElementById('yes-no-form');
+        
+        inputBtn.removeEventListener('click', chatbot_ui.handleInputBtnClick);
+        userInputElem.removeEventListener('keydown', chatbot_ui.handleUserInputKeydown);
+        binary_form.removeEventListener('click', chatbot_ui.binaryFormEventListener);
+        
+        chatbot_container.style.display = 'none';
+        chatbot_button.style.display = 'block';
+
+    });
+
 });
 
 chatbot_ui.handlePageLink();

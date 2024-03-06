@@ -6,6 +6,14 @@ import * as utils from './utils.js';
 // FUNCTION FOR HANDLING SERVER RESPONSE AND REDIRECT TO NEXT FORM
 
 function handleServerRespone (data) {
+
+    // Remove typing indicator
+    let typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+        console.log("Removing typing indicator");
+        typingIndicator.parentNode.removeChild(typingIndicator);
+    }
+
     // Append server response to chat history
     utils.send_message(data.server_response, 'chatbot_response');
 
@@ -29,33 +37,31 @@ function handleTextInput(event, route) {
 
     event.preventDefault();
 
-
-    console.log("Route in handleTextInput: ", route)
     // Check if user input is empty
-    let userInput = document.querySelector('#userInput').value;
-    if (userInput == '') {
+    if (!utils.isInputNotEmpty()){
         return;
     }
 
     // Append user input to chat history
+    let userInput = document.querySelector('#userInput').value;
     utils.send_message(userInput, 'user_message');
 
     // Clear user input field
     document.querySelector('#userInput').value = '';
 
     // Send user input to server and handle server response
-    console.log(userInput);
+    utils.createTypingIndicator();
     utils.postData(route, {user_input: userInput})
     .then(response => response.json())
     .then(data => handleServerRespone(data))
 }
-
+ 
 
 
 export function textFom(route) {
-    
-    console.log("Route in textForm: ", route)
 
+
+    console.log("Inside textForm");
     //Enable reset button
     resetButtonForm();
 
@@ -73,13 +79,22 @@ export function textFom(route) {
 
     // Add event listener to input field and enter key
     const inputBtn = document.querySelector('#user-input button');
-    inputBtn.addEventListener('click', function(event) {
+
+    // Remove any existing 'click' event listeners
+    console.log("Removing existing event listeners")
+    const clonedInputBtn = inputBtn.cloneNode(true);
+    inputBtn.parentNode.replaceChild(clonedInputBtn, inputBtn);
+
+
+    // Add a new 'click' event listener
+    clonedInputBtn.addEventListener('click', function(event) {
         handleTextInput(event, route);
-    } , {once: true});
+    } );
 
     const userInputElem = document.getElementById('userInput');
     
     // Remove any existing 'keydown' event listeners
+
     const clonedUserInputElem = userInputElem.cloneNode(true);
     userInputElem.parentNode.replaceChild(clonedUserInputElem, userInputElem);
     
@@ -93,20 +108,28 @@ export function textFom(route) {
 
 // FUNCTION FOR HANDLING YES/NO BUTTONS
 
-function setupButton(buttonClass, initialClass, clickClass) {
-    let button = document.querySelector(buttonClass);
-    button.disabled = false;
-    button.classList.remove(clickClass);
-    button.classList.add(initialClass);
-    button.onclick = function() {
-        this.classList.remove(initialClass);
-        this.classList.add(clickClass);
-    };
+function handleBinaryFormEvent (event, route, binary_form) {
+
+    console.log("Binary form event listener called");
+
+    event.preventDefault();
+
+    let buttonValue = event.submitter.value;
+
+    // Add message to chat
+    utils.send_message(buttonValue, 'user_message');
+    
+    utils.createTypingIndicator();
+
+    // Send button value to server and handle server response
+    utils.postData(route, { user_input: buttonValue })
+    .then(response => response.json())
+    .then(data => handleServerRespone(data));
+    return ;
 }
 
 export function binaryForm(route) {
 
-    console.log("Route in binaryForm: ", route)
 
     // Hide input field and show Yes/No buttons
     const binary_form = document.getElementById('yes-no-form');
@@ -119,31 +142,14 @@ export function binaryForm(route) {
     localStorage.setItem('currentFunction', 'binaryForm');
     localStorage.setItem('nextRoute', route);
 
-
-    // Setup buttons UI
-    setupButton('.yes-button', 'btn-success', 'btn-dark');
-    setupButton('.no-button', 'btn-danger', 'btn-dark');
+    const clonedBinaryForm = binary_form.cloneNode(true);
+    binary_form.parentNode.replaceChild(clonedBinaryForm, binary_form);
 
     // Add event listener to Yes/No buttons
-    binary_form.addEventListener('submit', (event) => {
-
-        event.preventDefault();
-
-        let buttonValue = event.submitter.value;
-
-        // Append button value to chat history
-        utils.send_message(buttonValue, 'user_message');
-
-        // Disable buttons
-        document.querySelector('.yes-button').disabled = true;
-        document.querySelector('.no-button').disabled = true;
-        
-        // Send button value to server and handle server response
-        utils.postData(route, { user_input: buttonValue })
-        .then(response => response.json())
-        .then(data => handleServerRespone(data));
+    clonedBinaryForm.addEventListener('submit', function(event) {
+        handleBinaryFormEvent(event, route);
     }, {once: true});
-
+        
     //Enable reset button
     resetButtonForm();
 }
@@ -164,15 +170,15 @@ export function resume_chat(currentFunction, nextRoute) {
     // Call the function that was interrupted
     if (currentFunction == 'textForm') {
         console.log("calling textForm");
-        textFom(nextRoute);
+        return textFom(nextRoute);
     }
     else if (currentFunction == 'binaryForm') {
         console.log("calling binaryForm");
-        binaryForm(nextRoute);
+        return binaryForm(nextRoute);
     }
     else if (currentFunction == 'endConversation') {
         console.log("calling endConversation");
-        endConversation();
+        return endConversation();
     }
 }
 
@@ -230,7 +236,11 @@ export function resetButtonForm() {
 
     const resetChat = document.getElementById('reset-chat');
 
-    resetChat.addEventListener('click', function(event) {
+    // Remove any existing 'click' event listeners
+    const clonedResetChat = resetChat.cloneNode(true);
+    resetChat.parentNode.replaceChild(clonedResetChat, resetChat);
+
+    clonedResetChat.addEventListener('click', function(event) {
         // Clear the chat history in the DOM
         let chatHistory = document.querySelector('#chat-history');
         while (chatHistory.firstChild) {
@@ -279,7 +289,7 @@ export function handlePageLink () {
     
             var pageNumber = event.target.getAttribute('data-page-number');
             console.log(pageNumber);
-            utils.postData('/page/' + pageNumber, {index: pageNumber})
+            utils.postData('/page/' + pageNumber, {index: pageNumber}, false)
             .then(response => {
                 if (response.ok) {
                     window.location.href = '/';
