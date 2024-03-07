@@ -51,7 +51,7 @@ function handleTextInput(event, route) {
 
     // Send user input to server and handle server response
     utils.createTypingIndicator();
-    
+
     //Send data to server
     utils.postData(route, {user_input: userInput})
     .then(response => response.json())
@@ -169,6 +169,8 @@ export function binaryForm(route) {
 
 export function resume_chat(currentFunction, nextRoute) {
     
+    // Hide before-chat buttons
+    document.getElementById('before-chat').style.display = 'none';
     // Show chat inputs
     document.getElementById('chat-inputs').style.display = 'flex';
 
