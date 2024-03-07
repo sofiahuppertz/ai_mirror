@@ -41,7 +41,6 @@ export function postData(route, data, clearStorage=true) {
 // FUNCTION TO APPEND PREVIOUS CHATS
 
 export function add_previous_chat(){
-    console.log('add_previous_chat');
 
     fetch('/get_previous_chat', {
         method: 'POST'
@@ -71,7 +70,6 @@ export function add_previous_chat(){
 
 export function isInputNotEmpty() {
 
-    console.log("inside isInputNotEmpty");
     const userInput = document.getElementById('userInput');
     if (userInput && userInput.value && userInput.value.trim() !== '') {
         return true;

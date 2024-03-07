@@ -11,12 +11,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Add event listener totrigger the chatbot
     const chatbot_button = document.getElementById('chatbot-button');
     const chatbot_container = document.getElementById('chatbot-container');
-    const close_button = document.getElementById('close-chatbot-button');
+    const shrink_button = document.getElementById('shrink-chat');
+    const close_button = document.getElementById('close-chat');
 
     // Display chatbot 
     chatbot_button.addEventListener('click', (event) => {
-        
+
         event.preventDefault();
+        console.log('localStorage', localStorage.getItem('currentFunction'));
+        console.log('localStorage', localStorage.getItem('nextRoute'));
+        
         chatbot_container.style.display = 'flex';
         chatbot_button.style.display = 'none';
 
@@ -24,8 +28,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         let currentFunction = localStorage.getItem('currentFunction');
         let nextRoute = localStorage.getItem('nextRoute');
 
-        console.log("currentFunction: ", currentFunction);
-        console.log("nextRoute: ", nextRoute);
         // Go to saved state in conversation
         if (currentFunction && nextRoute)
         {
@@ -40,7 +42,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     // Close chatbot when close button is clicked
-    close_button.addEventListener('click', (event) => {
+    shrink_button.addEventListener('click', (event) => {
 
         event.preventDefault();
 
@@ -57,6 +59,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     });
 
+    close_button.addEventListener('click', (event) => {
+        event.preventDefault();
+        chatbot_ui.clearConversation();
+        chatbot_container.style.display = 'none';
+        chatbot_button.style.display = 'block';
+    });
 });
 
 chatbot_ui.handlePageLink();

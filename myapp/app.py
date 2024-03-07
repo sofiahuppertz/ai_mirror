@@ -5,7 +5,6 @@ from flask_session import Session
 from models import init_db, Page, Person
 import os
 from openai import OpenAI
-import redis
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import utils
@@ -16,8 +15,7 @@ import utils
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "secret"
-app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+app.config['SESSION_TYPE'] = 'filesystem'
 
 Session(app)
 

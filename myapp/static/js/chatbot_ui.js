@@ -10,14 +10,12 @@ function handleServerRespone (data) {
     // Remove typing indicator
     let typingIndicator = document.getElementById('typingIndicator');
     if (typingIndicator) {
-        console.log("Removing typing indicator");
         typingIndicator.parentNode.removeChild(typingIndicator);
     }
 
     // Append server response to chat history
     utils.send_message(data.server_response, 'chatbot_response');
 
-    console.log("Route in handleServerResponse: ", data.route)
     // Check if chatbot should end conversation
     if (data.reset_page === "True") {
         return endConversation();
@@ -37,6 +35,8 @@ function handleTextInput(event, route) {
 
     event.preventDefault();
 
+    document.getElementById('before-chat').style.display = 'none';
+
     // Check if user input is empty
     if (!utils.isInputNotEmpty()){
         return;
@@ -51,6 +51,8 @@ function handleTextInput(event, route) {
 
     // Send user input to server and handle server response
     utils.createTypingIndicator();
+    
+    //Send data to server
     utils.postData(route, {user_input: userInput})
     .then(response => response.json())
     .then(data => handleServerRespone(data))
@@ -58,10 +60,13 @@ function handleTextInput(event, route) {
  
 
 
-export function textFom(route) {
+export function textFom(route, start_chat=false) {
 
+    // Change the class of chat-inputs
+    const chatInputs = document.getElementById('chat-inputs');
+    chatInputs.className = '';
+    chatInputs.className = 'chat-inputs-text';
 
-    console.log("Inside textForm");
     //Enable reset button
     resetButtonForm();
 
@@ -73,15 +78,16 @@ export function textFom(route) {
     user_input.style.display = 'flex';
 
     // Store information in localStorage
-    localStorage.setItem('currentFunction', 'textForm');
-    localStorage.setItem('nextRoute', route);
+    if (!start_chat){
+        localStorage.setItem('currentFunction', 'textForm');
+        localStorage.setItem('nextRoute', route);
+    }
 
 
     // Add event listener to input field and enter key
     const inputBtn = document.querySelector('#user-input button');
 
-    // Remove any existing 'click' event listeners
-    console.log("Removing existing event listeners")
+
     const clonedInputBtn = inputBtn.cloneNode(true);
     inputBtn.parentNode.replaceChild(clonedInputBtn, inputBtn);
 
@@ -108,9 +114,7 @@ export function textFom(route) {
 
 // FUNCTION FOR HANDLING YES/NO BUTTONS
 
-function handleBinaryFormEvent (event, route, binary_form) {
-
-    console.log("Binary form event listener called");
+function handleBinaryFormEvent (event, route) {
 
     event.preventDefault();
 
@@ -130,6 +134,13 @@ function handleBinaryFormEvent (event, route, binary_form) {
 
 export function binaryForm(route) {
 
+    //Hide before chat buttons
+    document.getElementById('before-chat').style.display = 'none';
+
+    // Change the class of chat-inputs
+    const chatInputs = document.getElementById('chat-inputs');
+    chatInputs.className = '';
+    chatInputs.className = 'chat-inputs-binary';
 
     // Hide input field and show Yes/No buttons
     const binary_form = document.getElementById('yes-no-form');
@@ -158,9 +169,7 @@ export function binaryForm(route) {
 
 export function resume_chat(currentFunction, nextRoute) {
     
-    console.log("Inside resume_chat");
-    // Hide "conversation starter" buttons and show chat input fields
-    document.getElementById('before-chat').style.display = 'none';
+    // Show chat inputs
     document.getElementById('chat-inputs').style.display = 'flex';
 
     // Clear local storage
@@ -169,15 +178,12 @@ export function resume_chat(currentFunction, nextRoute) {
     
     // Call the function that was interrupted
     if (currentFunction == 'textForm') {
-        console.log("calling textForm");
         return textFom(nextRoute);
     }
     else if (currentFunction == 'binaryForm') {
-        console.log("calling binaryForm");
         return binaryForm(nextRoute);
     }
     else if (currentFunction == 'endConversation') {
-        console.log("calling endConversation");
         return endConversation();
     }
 }
@@ -185,11 +191,12 @@ export function resume_chat(currentFunction, nextRoute) {
 // FUNCTION TO START THE CHAT
 
 export function start_chat(){ 
-
-    console.log("Inside start_chat");
-    // Hide chat and show before-chat buttons: Idem
+    
+    // Show before-chat buttons
     document.getElementById('before-chat').style.display = 'flex';
-    document.getElementById('chat-inputs').style.display = 'none';
+    
+
+    textFom('/chatbot', true);
 
     // Maybe here is where it shoul start...
     let chatbot_triggers = document.querySelectorAll('#before-chat button');
@@ -218,7 +225,6 @@ export function first_chatbot_message(button) {
     let chatbotMessage;
 
     document.getElementById('before-chat').style.display = 'none';
-    document.getElementById('chat-inputs').style.display = 'flex';
     
     if (button.value == 'client_answer') {
         chatbotMessage = "...Thanks for your help. Answers are limited to 270 characters.";
@@ -232,6 +238,26 @@ export function first_chatbot_message(button) {
 
 // FUNCTIONS FOR ENDING THE CHAT 
 
+export function clearConversation() {
+
+    // Clear the chat history in the DOM
+    let chatHistory = document.querySelector('#chat-history');
+    while (chatHistory.firstChild) {
+        chatHistory.removeChild(chatHistory.firstChild);
+    }
+    // Send a POST request to the server to clear the chat history server-side
+    utils.postData('/reset_chat', {})
+        .then(response => response.json())
+        .then(data => { 
+            localStorage.removeItem('currentFunction');
+            localStorage.removeItem('nextRoute');
+            start_chat();
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+}
+
 export function resetButtonForm() {
 
     const resetChat = document.getElementById('reset-chat');
@@ -241,22 +267,7 @@ export function resetButtonForm() {
     resetChat.parentNode.replaceChild(clonedResetChat, resetChat);
 
     clonedResetChat.addEventListener('click', function(event) {
-        // Clear the chat history in the DOM
-        let chatHistory = document.querySelector('#chat-history');
-        while (chatHistory.firstChild) {
-            chatHistory.removeChild(chatHistory.firstChild);
-        }
-        // Send a POST request to the server to clear the chat history server-side
-        utils.postData('/reset_chat', {})
-            .then(response => response.json())
-            .then(data => { 
-                localStorage.removeItem('currentFunction');
-                localStorage.removeItem('nextRoute');
-                start_chat();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        clearConversation();
     }, {once: true});
 }
 
@@ -288,7 +299,6 @@ export function handlePageLink () {
             event.preventDefault();
     
             var pageNumber = event.target.getAttribute('data-page-number');
-            console.log(pageNumber);
             utils.postData('/page/' + pageNumber, {index: pageNumber}, false)
             .then(response => {
                 if (response.ok) {
