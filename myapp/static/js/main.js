@@ -41,30 +41,34 @@ document.addEventListener('DOMContentLoaded', (event) => {
         return;
     });
 
-    // Close chatbot when close button is clicked
-    shrink_button.addEventListener('click', (event) => {
-
+    function shrink_chatbot(event)
+    {
         event.preventDefault();
-
-        const inputBtn = document.querySelector('#user-input button');
-        const userInputElem = document.getElementById('userInput');
-        const binary_form = document.getElementById('yes-no-form');
-        
-        inputBtn.removeEventListener('click', chatbot_ui.handleInputBtnClick);
-        userInputElem.removeEventListener('keydown', chatbot_ui.handleUserInputKeydown);
-        binary_form.removeEventListener('click', chatbot_ui.binaryFormEventListener);
-        
         chatbot_container.style.display = 'none';
         chatbot_button.style.display = 'block';
+    }
 
+    // Close chatbot when close button is clicked
+    shrink_button.addEventListener('click', (event) => {
+        shrink_chatbot
     });
 
+    // Close and clean chatbot when close button is clicked
     close_button.addEventListener('click', (event) => {
         event.preventDefault();
         chatbot_ui.clearConversation();
         chatbot_container.style.display = 'none';
         chatbot_button.style.display = 'block';
     });
+
+    // Close chatbot when escape key is pressed
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape')
+        {
+            shrink_chatbot(event);
+        }
+    });
+
 });
 
 chatbot_ui.showSearchPage();
