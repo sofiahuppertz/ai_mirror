@@ -28,6 +28,7 @@ def classify_conversation(client, session, user_message, db_Session):
     
     messages = [{'role': 'system', 'content': context}, {'role': 'user', 'content': user_message}]
     
+    
     response = utils.get_json_response(client, "gpt-3.5-turbo-0125", messages)
 
     response = json.loads(response)

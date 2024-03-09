@@ -1,5 +1,4 @@
-import * as utils from './utils.js';
-import * as chatbot_ui from './chatbot_ui.js';
+import * as toolbar from './toolbar.js'
 
 document.addEventListener('DOMContentLoaded', (event) => {
     
@@ -8,6 +7,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         this.submit(); // Submit the form to go to page 1
     });
 
-    chatbot_ui.searchPage();
+    toolbar.searchPage();
 
 });

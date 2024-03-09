@@ -16,14 +16,14 @@
     <div style="height: 0.5px; background-color: rgba(0, 0, 0, 0.247); width: 100%; padding: 0 !important;"></div>
     <div id="buttons">
         <div id="start-reading"><i>Start reading</i></div>
-        <form id="go-to-page-1" action="/page/1" method="post">
+        <form id="go-to-page-1" action="{{ url_for('page', page_number=1)}}" method="get">
             <button id="from-start-btn" type="submit" name="action" value="start">
                 <div id="page-text">Page 1</div>
                 <div id="arrow-icon">&#8594;</div>
             </button>
         </form>
         
-        <form id="search-page" action="/page/1" method="post">
+        <form id="search-page" action="{{ url_for('page', page_number=1)}}" method="get">
             <input id="search-input" type="text" placeholder="Enter page number">
             <button id="search-button" value="search">&#128269;</button>
         </form>

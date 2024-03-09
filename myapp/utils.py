@@ -98,7 +98,8 @@ def connect_to_person_id(session, db_session):
 
 
 def add_person_data(person_id, db_session, method, input):
-    
+
+
     person = db_session.query(Person).get(person_id)
 
     getattr(person, method)(input)
@@ -108,6 +109,7 @@ def add_person_data(person_id, db_session, method, input):
     return
 
 # OpenAI utils
+
 
 def get_json_response(client, model, messages):
     
@@ -141,3 +143,12 @@ def get_embedding(client, text: str, model):
 
     return response.data[0].embedding
 
+
+# Functions to add security to the app
+
+def isValidPage(page_number, total_pages):
+    
+    if page_number > 0 and page_number <= total_pages:
+        return True
+    else:
+        return False

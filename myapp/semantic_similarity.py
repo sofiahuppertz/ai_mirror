@@ -107,3 +107,5 @@ def generate_embeddings(db_Session, client):
     df.to_csv(datafile_path)
 
     return
+
+

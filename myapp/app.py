@@ -42,16 +42,13 @@ def after_request(response):
 @app.route("/", methods=["GET", "POST"])
 def index():
 
-    if 'page_num' not in session:
-        session['page_num'] = 1
+    session.setdefault('page_num', 1)
 
-    session.modified = True
-    
     return page(session['page_num'])
 
 
 
-@app.route("/home", methods=["GET", "POST"])
+@app.route("/home", methods=["GET"])
 def home():
     return render_template("home.html")
 
@@ -61,10 +58,13 @@ def home():
 def page(page_number):
 
     # Set the current page number in the session
+    total_pages = utils.get_row_count(db_Session, Page)
 
-    session['page_num'] = page_number
+    if utils.isValidPage(page_number, total_pages):
+        
+        session['page_num'] = page_number
 
-    session.modified = True
+        session.modified = True
 
     # Change the page number based on the user's request
 
@@ -72,13 +72,19 @@ def page(page_number):
         
         action = request.form.get('action')
         
-        if action == 'next' and session['page_num'] < utils.get_row_count(db_Session, Page):
+        if action not in ['previous', 'next']:
+            return jsonify({'error': 'Invalid request'}), 400
+        
+        if action == 'next' and session['page_num'] < total_pages:
 
             session['page_num'] += 1
         
         elif action == 'previous' and session['page_num'] > 1:
 
             session['page_num'] -= 1
+        else:
+            if 'page_num' not in session:
+                session['page_num'] = 1
 
     # Extract the question and answer from the database
     question, answer = utils.get_question_and_answer(session['page_num'], db_Session)
@@ -93,15 +99,18 @@ def page(page_number):
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
     
+    # Input validation
+    
     data = request.get_json()
+    
+    if 'user_input' not in data:
+        return jsonify({'error': 'Invalid request'}), 400
     
     input = data.get('user_input')
 
     # Make sure session['person_id'] is set to none if it doesn't exist (We need this variable to store other rows)
 
-    if 'person_id' not in session:
-        session['person_id'] = None
-        session.modified = True
+    session.setdefault('person_id', None)
     
     # Start the conversation
     if 'path' not in session:
@@ -126,8 +135,12 @@ def register_person():
 
     # Get the user's input and set the response based on the last request
     data = request.get_json()
+
+    if 'user_input' not in data or 'history' not in session or 'person_id' not in session : 
+        return jsonify({'error': 'Invalid request'}), 400
     
     input = data.get('user_input')
+    
     
     previous_request = session['history'][-1]['chatbot_response']
 
@@ -148,12 +161,16 @@ def register_person():
     # "Please add an ocupation or profession..."
     elif previous_request == chatbot_responses[5]:
 
+        if session['person_id'] == None:
+            return jsonify({'error': 'Invalid request'}), 400
         utils.add_person_data(session['person_id'], db_session, "set_occupation", input)
         
         dict = chatbot_logic.prepare_json(session, input, chatbot_responses[6], None, "/register_person", "False", "False")
 
     # "Add an email to alert you when the new book edition with your added insight is published."
     else :
+        if session['person_id'] == None:
+            return jsonify({'error': 'Invalid request'}), 400
         
         utils.add_person_data(session['person_id'], db_session, "set_email", input)
         
@@ -192,8 +209,6 @@ def reset_chat():
 def get_previous_chat():
     if 'history' in session:
         history = session['history']
-        print(history)
-        print(type(history))
         return jsonify({"response": history})
     else:
         return jsonify({"response": None})

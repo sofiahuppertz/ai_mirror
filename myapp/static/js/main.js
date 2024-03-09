@@ -1,6 +1,6 @@
 import * as utils from './utils.js';
 import * as chatbot_ui from './chatbot_ui.js';
-
+import * as toolbar from './toolbar.js';
 
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -18,8 +18,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     chatbot_button.addEventListener('click', (event) => {
 
         event.preventDefault();
-        console.log('localStorage', localStorage.getItem('currentFunction'));
-        console.log('localStorage', localStorage.getItem('nextRoute'));
         
         chatbot_container.style.display = 'flex';
         chatbot_button.style.display = 'none';
@@ -71,6 +69,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 });
 
-chatbot_ui.showSearchPage();
+toolbar.showSearchPage();
 
 chatbot_ui.handlePageLink();

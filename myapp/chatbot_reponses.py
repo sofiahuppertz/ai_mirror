@@ -11,3 +11,4 @@ chatbot_responses.append("Thank you for your contribution and for helping humans
 chatbot_responses.append("We couldn't find a question similar to yours... Would you like to add your question to our database?")
 chatbot_responses.append("&#x1F44D;")
 chatbot_responses.append("Would you like to add an answer?")
+chatbot_responses.append("An unexpected error ocurred. Try again later.")

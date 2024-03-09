@@ -48,11 +48,13 @@ def handle_first_response(client, session, input, db_Session ):
         # Add page number to session
         session['hold_page'] = session['page_num']
         session.modified = True
-        print("HOLD PAGE: ", session['hold_page'])
         return prepare_json(session, input, chatbot_responses[0], 'B', "/chatbot" , "True", "False")
 
-    else:
+    elif session['path'] == 'C':
         return handle_invalid_response(session)
+    else:
+        prepare_json(session, input, chatbot_responses[11], None, "/", "False", "True")
+
     
 
 def handle_next_response(session, input, db_Session):
@@ -93,7 +95,6 @@ def handle_next_response(session, input, db_Session):
                 return register_person(session, input, question_type)
             
         elif session['path'] == 'B':
-            print("HOLD PAGE: ", session['hold_page'])
             session['new_row_id'] = utils.insert_row(db_session, Answer, answer=input, person_id=session['person_id'], page_id=session['hold_page'])
         
             db_session.close() 
@@ -108,6 +109,8 @@ def handle_next_response(session, input, db_Session):
         else:
             return register_person(session, input, question_type)
 
+    if input != 'Yes' and input != 'No':
+        return handle_invalid_response(session)
     return prepare_json(session, input, chatbot_responses[9], None, "/", "False", "True")
 
 
