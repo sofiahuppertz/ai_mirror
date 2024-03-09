@@ -67,4 +67,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
+chatbot_ui.showSearchPage();
+
 chatbot_ui.handlePageLink();

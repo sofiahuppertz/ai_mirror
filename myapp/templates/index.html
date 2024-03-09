@@ -11,29 +11,45 @@
 
 <body>
     <div id="header">
-        <img src="https://images.squarespace-cdn.com/content/v1/5cf56bb2622f1700010563b4/f5d72824-d964-48f2-806c-9b663ee42a66/Ai+maze+book+3.png?format=1000w" style="width: 100%;">
+        <img src="../static/book-header.jpg" style="width: 40%; max-width: 200px;">
     </div>
     <div id="book-container">
         <div id="book">
+            <div id="top-buttons">
+                <form action="{{url_for('home')}}" method="GET">
+                    <button id="home-button" type="submit">&#x1F3E0;</button>
+                </form>
+                <form id="show-search-bar">
+                    <button id="show-search">&#128269;</button>
+                </form>
+                <form id="search-page">
+                    <input type="text" id="search-input" name="search" placeholder="Page number">
+                    <button id="close-search" value="close">&#x2715;</button>
+                    <button id="search-button"  value="search">&#128269;</button>
+                </form>
+            </div>
             <form action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
                 <div>
                     <div id="question">
                         <h2>{{ question }}</h2>
                    </div>
                    <div id="answer">
-                       <p>{{ answer }}</p>
+                       <p style="font-size: 17px;">{{ answer }}</p>
                    </div>
                 </div>
+                <div id="page">
+                    <p>{{ page }}</p>
+                </div>
                 <div class="page-buttons">
-                    <button type="submit" class="btn" name="action" value="previous">&#8592;</button>
-                    <button type="submit" class="btn" name="action" value="next">&#8594;</button>
+                    <button type="submit"  name="action" value="previous">⬅️</button>
+                    <button type="submit"  name="action" value="next">➡️</button>
                 </div>
             </form>
         </div>
     </div>
     <div>
         <form id="chatbot-button">
-            <button type="submit" class="btn" name="action" value="chatbot"><img src="../static/chatbot.png" style="max-width: 40px;"></button>
+            <button type="submit" name="action" value="chatbot" style="font-size: 40px;">&#x1F4AC;</button>
         </div>
     <div id="chatbot-container">
         <div id="header-section">
@@ -48,7 +64,8 @@
             </div>            
         </div>
         <div id="chatbot-title">
-            <h3>Crowdsourcing human intelligence to face A.I</h3>
+            <div style="height: 0.5px; background-color: rgba(0, 0, 0, 0.247); width: 100%;"></div>
+            <p style="font-size: 18px; margin-top:5px; color: black;">Crowdsourcing human intelligence to face AI</p>    
         </div>
         
         <div id="chat-history">
@@ -65,7 +82,7 @@
             <div id="chat-inputs">
                 <form action="/chatbot" method="POST" id="user-input">
                     <textarea rows="1" id="userInput" name="userInput" autofocus></textarea>
-                    <button type="submit" class="btn" name="action" value="client_input">
+                    <button type="submit"   name="action" value="client_input">
                         <img src="../static/send.png" width="20px" title="Message icônes créées par onlyhasbi - Flaticon">
                     </button>
                 </form>
@@ -77,6 +94,15 @@
         </div>
     </div>
     <style>
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button {
+            background-color: transparent;
+            border: none;
+        }
 
         #header {
             text-align: center;
@@ -93,23 +119,29 @@
             padding-top: 0px;
             font-size: 18px;
         }
-        .btn {
-            border-radius: 30px;
-        }
+
         .page-buttons {
+            position: fixed;
+            top: 50%;
+            left:50%;
+            transform: translate(-50%, -50%);
             display: flex;
-            justify-content: center;
-            gap: 15px;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 100%;
+            z-index: 1;
+
         }
+
         .page-buttons button {
-            background-color: rgba(14, 14, 14, 0.641);
+            background-color: transparent;
             border: none;
-            color: white;
+            font-size: 25px;
         }
 
         #chatbot-button {
             position: fixed;
-            left: 77vw;
+            left: 87vw;
             bottom: 5vw;
             z-index: 1;
         }
@@ -120,6 +152,8 @@
             box-shadow: 0px 0px 10px rgba(33, 33, 33, 0.5); 
             height: 90%;
             width: 90%;
+            max-width: 400px;
+            max-height: 600px;
             top: 5%;
             left: 0;
             right: 0;
@@ -129,28 +163,15 @@
             flex-direction: column;
             align-items: center;   
             overflow: auto;
-        }
-        /* On screens that are 600px or less, center the chatbot container */
-        @media screen and (max-width: 600px) {
-            #chatbot-container {
-                left: 0;
-                right: 0;
-                margin: 0 auto;
-            }
-        }
-        /* On screens that are larger than 600px, align the chatbot container to the right */
-        @media screen and (min-width: 601px) {
-            #chatbot-container {
-                left: auto;
-                right: 0;
-                margin: 15px;
-                max-width: 450px;
-                max-height: 600px;
-                top: 20%; 
-            }
+            z-index: 2;
+            left: auto;
+            right: 0;
+            margin: 15px;
+            top: auto;
+            bottom: 0;
         }
         
-        #header-section {
+        #header-section { 
             margin-inline-start: 32px;
             padding-top: 8px;
             display: flex;
@@ -196,7 +217,7 @@
         }
 
         #resetButton {
-            background-color: rgb(80, 116, 156);
+            background-color: rgb(80, 162, 255);
         }
 
         #resetButton::after {
@@ -217,8 +238,10 @@
         }
 
         #closeButton::after {
-            content: '✖';                  
-            font-size: 10px;          
+            content: '\2715';                 
+            font-size: 14px; 
+            color: rgb(50, 50, 50);
+            font-weight: bold;        
             opacity: 0;                  
             transition: opacity 0.3s ease; 
         }
@@ -249,12 +272,13 @@
 
         .starters {
             background-color: rgba(203, 203, 203, 0.5);
-            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0px 0px 10px rgba(217, 216, 216, 0.5);
             border: none;
             border-radius: 10px;
             padding: 8px;
             padding-left: 20px;
             padding-right: 20px;
+            margin: 2px;
         }
            
         #chat-history {
@@ -271,6 +295,7 @@
             border-radius: 30px;
             padding: 10px;
             margin-bottom: 10px;
+            margin-right: 80px;
             
         }
 
@@ -280,6 +305,7 @@
             border-radius: 30px;
             padding: 10px;
             margin-bottom: 10px;
+            margin-left: 80px;
         }
 
     
@@ -297,16 +323,18 @@
         }
         
         .yes-button {
+            border-radius: 20px;
             color:white;
-            margin-right: 5px;
+            margin-right: 10px;
             font-size: 22px;
             background-color: rgb(74, 136, 74);
             box-shadow: 0px 0px 10px rgba(203, 203, 203, 0.5);
         }
     
         .no-button {
+            border-radius: 20px;
             color: white;
-            margin-left: 5px;
+            margin-left: 10px;
             font-size: 22px;
             background-color: rgb(231, 83, 83);
             box-shadow: 0px 0px 10px rgba(203, 203, 203, 0.5);
@@ -356,13 +384,66 @@
         #typingIndicator span:nth-child(2) {
             animation-delay: 0.5s;
         }
+
         #typingIndicator span:nth-child(3) {
             animation-delay: 1s;
         }
+
         @keyframes dot {
             0%, 40% { opacity: 0; }
             50%, 100% { opacity: 1; }
         }
+
+        #top-buttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; 
+            align-items: flex-end;
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 20px;
+        }
+
+        #top-buttons button {
+            padding: 5px;
+            padding-left: 10px;
+            font-size: 25px;
+        }
+
+
+        #search-page {  
+            display: none;
+            padding-left: 20px;
+            background-color: white;
+            box-shadow: 0px 0px 10px 0px  rgb(222, 224, 227);
+            border-radius: 30px;
+            z-index: 1;
+        }
+
+
+        #search-input {
+            width : 0px;
+            border: none;
+            background-color: transparent;
+            max-width: 100px;
+            font-size: 16px;
+            outline: none !important;
+            resize: none;
+        }
+
+        #close-search {
+            color: rgb(219, 85, 85);
+            font-weight: lighter;
+        }
+
+
+
+        #question {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
     </style>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

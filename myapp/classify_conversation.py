@@ -7,7 +7,7 @@ CLASSIFICATION = (
         "Your task is to classify user input based on a a question and answer, all delimited by: '\"\"'.\n"
         "You have to categorize the user message into one of the following options based on its content:\n"
         "A) The user is asking a different question related to Artificial Intelligence.\n"
-        "B) The user is providing information to answer to the question.\n"
+        "B) The user is giving feedback or adding to the answer.\n"
         "C) None of the above.\n"
         "You have to respond with the corresponding letter in uppercase (e.g., A, B, C, or D). Don't add any extra characters.\n"
         "IMPORTANT: The response should be in JSON with the key response and the value being the letter (e.g., {{\"response\": \"A\"}}).\n"

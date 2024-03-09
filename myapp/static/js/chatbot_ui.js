@@ -42,10 +42,16 @@ function handleTextInput(event, route) {
         return;
     }
 
-    // Append user input to chat history
     let userInput = document.querySelector('#userInput').value;
+    
+    // Check number of tokens
+    userInput = utils.checkTokenLimit(userInput, 100);
+    
+    // Append user input to chat history
     utils.send_message(userInput, 'user_message');
 
+    console.log('userInput', userInput);
+    
     // Clear user input field
     document.querySelector('#userInput').value = '';
 
@@ -229,7 +235,7 @@ export function first_chatbot_message(button) {
     document.getElementById('before-chat').style.display = 'none';
     
     if (button.value == 'client_answer') {
-        chatbotMessage = "...Thanks for your help. Answers are limited to 270 characters.";
+        chatbotMessage = "...Thanks for your help. Answers are limited to 100 words.";
     }
     else if (button.value == 'client_question') {
         chatbotMessage = "Please add your question on the future of A.I.";
@@ -311,3 +317,95 @@ export function handlePageLink () {
     });
 }
 
+// Function to search for a page
+
+export function showSearchPage() {
+    const showSearch = document.getElementById('show-search-bar');
+    const searchPageForm = document.getElementById('search-page');
+
+
+    const clonedShowSearch = showSearch.cloneNode(true);
+    showSearch.parentNode.replaceChild(clonedShowSearch, showSearch);
+
+    clonedShowSearch.addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        clonedShowSearch.style.display = 'none';
+        searchPageForm.style.display = 'flex';
+        
+        const searchInput = document.getElementById('search-input');
+        
+        let width = 0;
+        const expandWidth = setInterval(() => {
+            width += 3;
+            console.log('ok')
+            searchInput.style.width = `${width}px`; // Set the new width
+    
+            if (width >= 100) {
+                clearInterval(expandWidth);
+            }
+        }, 1); 
+
+        searchPage();
+        closeSearch();
+    });
+}
+
+export function closeSearch() {
+    const closeSearch = document.getElementById('close-search');
+    const searchPageForm = document.getElementById('search-page');
+    const showSearch = document.getElementById('show-search-bar');
+
+    const clonedCloseSearch = closeSearch.cloneNode(true);
+    closeSearch.parentNode.replaceChild(clonedCloseSearch, closeSearch);
+
+    clonedCloseSearch.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        const searchInput = document.getElementById('search-input');
+
+        let width = 100;
+        const reduceWidth = setInterval(() => {
+            width -= 3;
+            console.log('ok')
+            searchInput.style.width = `${width}px`; // Set the new width
+    
+            if (width <= 0) {
+                clearInterval(reduceWidth);
+                searchPageForm.style.display = 'none';
+                showSearch.style.display = 'flex'
+                showSearchPage();
+            }
+        }, 3); 
+    });
+}
+
+
+// Function to search for a page
+export function searchPage() {
+
+    const searchPageForm = document.getElementById('search-page');
+    const searchButton = document.getElementById('search-button');
+
+    const clonedSearchButton = searchButton.cloneNode(true);
+    searchButton.parentNode.replaceChild(clonedSearchButton, searchButton);
+
+    clonedSearchButton.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        var input = document.getElementById('search-input').value.trim();        
+
+        // Empty input field
+        document.getElementById('search-input').value = '';
+
+        // Check if input is valid
+        if (!utils.isValidPageNumber(input))
+        {
+            return;
+        }
+
+        searchPageForm.setAttribute('action', '/page/' + input);
+        searchPageForm.submit();
+    });
+
+}

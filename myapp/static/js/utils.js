@@ -77,3 +77,23 @@ export function isInputNotEmpty() {
     
     return false;
 }
+
+export function checkTokenLimit(input, tokenLimit=100) {
+
+    const tokens = input.split(/\s+/);  
+
+    if (tokens.length > tokenLimit) {
+        alert("Token limit exceeded. Your message will be truncated.");
+        input = tokens.slice(0, tokenLimit).join(" ");
+    }
+    return input;
+}
+
+export function isValidPageNumber(input) {
+
+    if (input === '' || isNaN(input) || parseInt(input) < 1) {
+        alert('Please enter a valid page number greater than 0.');
+        return false;
+    }
+    return true;
+}
