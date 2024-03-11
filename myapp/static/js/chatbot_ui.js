@@ -58,7 +58,7 @@ function handleTextInput(event, route) {
     utils.createTypingIndicator();
 
     //Send data to server
-    utils.postData(route, {user_input: userInput})
+    utils.postData('POST', route, {user_input: userInput})
     .then(response => response.json())
     .then(data => handleServerRespone(data))
 }
@@ -136,7 +136,7 @@ function handleBinaryFormEvent (event, route) {
     utils.createTypingIndicator();
 
     // Send button value to server and handle server response
-    utils.postData(route, { user_input: buttonValue })
+    utils.postData('POST', route, { user_input: buttonValue })
     .then(response => response.json())
     .then(data => handleServerRespone(data));
     return ;
@@ -258,7 +258,7 @@ export function clearConversation() {
         chatHistory.removeChild(chatHistory.firstChild);
     }
     // Send a POST request to the server to clear the chat history server-side
-    utils.postData('/reset_chat', {})
+    utils.postData('POST', '/reset_chat', {})
         .then(response => response.json())
         .then(data => { 
             localStorage.removeItem('currentFunction');
@@ -310,8 +310,9 @@ export function handlePageLink () {
 
             event.preventDefault();
     
+            console.log("HERE");
             var pageNumber = event.target.getAttribute('data-page-number');
-            utils.postData('/page/' + pageNumber, {index: pageNumber}, false)
+            utils.postData('GET', '/page/' + pageNumber, {index: pageNumber}, false)
             .then(response => {
                 if (response.ok) {
                     window.location.href = '/';

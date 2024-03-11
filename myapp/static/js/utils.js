@@ -22,20 +22,27 @@ export function createTypingIndicator() {
 
 //FUNNTION TO SEND DATA TO SERVER
 
-export function postData(route, data, clearStorage=true) {
+export function postData(method, route, data, clearStorage=true) {
 
     if (clearStorage) {
         localStorage.removeItem('currentFunction');
         localStorage.removeItem('nextRoute');
     }
 
-    return fetch(route, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    });
+    if (method === 'GET') {
+        return fetch(route, {
+            method: method
+        });
+    }
+    else {
+        return fetch(route, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
 }
 
 // FUNCTION TO APPEND PREVIOUS CHATS
@@ -78,6 +85,8 @@ export function isInputNotEmpty() {
     return false;
 }
 
+// FUNCTION TO CHECK INPUT LENGTH IS VALID
+
 export function checkTokenLimit(input, tokenLimit=100) {
 
     const tokens = input.split(/\s+/);  
@@ -88,6 +97,8 @@ export function checkTokenLimit(input, tokenLimit=100) {
     }
     return input;
 }
+
+// FUNCTION TO CHECK PAGE NUMBER IS VALID
 
 export function isValidPageNumber(input) {
 

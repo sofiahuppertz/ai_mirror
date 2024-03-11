@@ -12,12 +12,12 @@ import utils
 
 # Configure flask session
 
-app = Flask(__name__)
+application = Flask(__name__)
 
-app.config['SECRET_KEY'] = "secret"
-app.config['SESSION_TYPE'] = 'filesystem'
+application.config['SECRET_KEY'] = "secret"
+application.config['SESSION_TYPE'] = 'filesystem'
 
-Session(app)
+Session(application)
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
@@ -29,7 +29,7 @@ db_Session = sessionmaker(bind=engine)
 init_db(engine)
 
 
-@app.after_request
+@application.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -39,7 +39,7 @@ def after_request(response):
 
 
 
-@app.route("/", methods=["GET", "POST"])
+@application.route("/", methods=["GET", "POST"])
 def index():
 
     session.setdefault('page_num', 1)
@@ -48,13 +48,14 @@ def index():
 
 
 
-@app.route("/home", methods=["GET"])
+@application.route("/home", methods=["GET"])
 def home():
+    
     return render_template("home.html")
 
 # ROUTE THAT DISPLAYS THE PAGE
 
-@app.route("/page/<int:page_number>", methods=["GET", "POST"])
+@application.route("/page/<int:page_number>", methods=["GET", "POST"])
 def page(page_number):
 
     # Set the current page number in the session
@@ -96,7 +97,7 @@ def page(page_number):
 # ROUTE THAT HANDLES THE CHATBOT
 
 
-@app.route("/chatbot", methods=["POST"])
+@application.route("/chatbot", methods=["POST"])
 def chatbot():
     
     # Input validation
@@ -130,7 +131,7 @@ def chatbot():
 # ROUTE THAT HANDLES REGISTRATION OF PEOPLE
 
 
-@app.route("/register_person", methods=["POST"])
+@application.route("/register_person", methods=["POST"])
 def register_person():
 
     # Get the user's input and set the response based on the last request
@@ -183,7 +184,7 @@ def register_person():
 
 # ROUTE THAT HANDLES THE RESET OF THE CHAT
 
-@app.route("/reset_chat", methods=["POST"])
+@application.route("/reset_chat", methods=["POST"])
 def reset_chat():
 
     if 'path' in session:
@@ -205,7 +206,7 @@ def reset_chat():
 
 # ROUTE THAT PASSES HISOTRY OF THE CHAT TO THE FRONTEND
 
-@app.route("/get_previous_chat", methods=["POST"])
+@application.route("/get_previous_chat", methods=["POST"])
 def get_previous_chat():
     if 'history' in session:
         history = session['history']
@@ -215,4 +216,4 @@ def get_previous_chat():
 
 
 if __name__ == '__main__':
-    app.run(port=8000, debug=True)
+    application.run(port=8000, debug=True)
