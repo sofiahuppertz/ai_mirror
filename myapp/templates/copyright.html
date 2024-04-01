@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{%block title%}Copyright{%endblock%}
+
+{%block content%}
+<div id="book-container">
+    <div id="copyright" style="margin-top: 20px;">
+        <form  action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
+            <p><b>PUBLISHED BY</b></p>
+            <p style="text-decoration: underline;"><b><i>SEBASTIAN STUDIO EDITORIALS</i></b></p>
+            <p>Copyright © 2023 by Sebastian Studio, New York.</p>
+            <p>All rights reserved. This book or any portion thereof
+                may not be reproduced or used in any manner whatsoever
+                without the express written permission of the author except for the use of brief quotations in a book review.
+            </p>
+            <p><a href="https://sebastian.studio">Sebastian Studio</a></p>
+            <p><a href="https://www.instagram.com/sebastianstudio/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/1200px-Instagram_icon.png" style="width: 15px;"></a></p>
+            <div style="margin-top: 10px; margin-bottom: 10px; width:100%; height: 1px; background-color: black;"></div>
+            <p><i>This is a transcription of my notes and ideas scribbled over a decade imagining our inevitable future clash with AI.  </i></p>
+            <p><i>Technology is currently advancing so fast that writing this book was a race against time. I would have liked to have sharpened the texts, but preferred to immediately release a minimum viable product that could be improved with your user feedback. </i></p>
+            <p><i>Consider this book an exercise in creative thinking. Flip through it one page at a time or read it in one go, as a sci-fi thriller for humanity’s future. Make it your captain’s log for the AI storm.</i></p>
+            <div style="margin-top: 10px; margin-bottom: 10px; width: 100%; height: 1px; background-color: black;"></div>
+            <div class="page-buttons">
+                <button type="submit"  name="action" value="previous">&lt;</button>
+                <button type="submit"  name="action" value="next">&gt;</button>
+            </div>
+            <div id="page" style="display: none;">
+                <p>-1</p>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="module" src="{{ url_for('static', filename='js/first_pages.js') }}"></script>
+{%endblock%}

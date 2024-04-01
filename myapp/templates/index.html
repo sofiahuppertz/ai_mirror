@@ -1,450 +1,74 @@
-<!DOCTYPE html>
+{% extends "layout.html" %}
 
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, width=device-width">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <title>AI MIRROR</title>
-</head>
+{%block title%}AI Mirror{%endblock%}
 
-<body>
-    <div id="header">
-        <img src="../static/book-header.jpg" style="width: 40%; max-width: 200px;">
-    </div>
-    <div id="book-container">
-        <div id="book">
-            <div id="top-buttons">
-                <form action="{{url_for('home')}}" method="GET">
-                    <button id="home-button" type="submit">&#x1F3E0;</button>
-                </form>
-                <form id="show-search-bar">
-                    <button id="show-search">&#128269;</button>
-                </form>
-                <form id="search-page">
-                    <input type="text" id="search-input" name="search" placeholder="Page number" autocomplete="off">
-                    <button id="close-search" value="close">&#x2715;</button>
-                    <button id="search-button"  value="search">&#128269;</button>
-                </form>
+{%block content%}
+<div id="book-container">
+    <div id="book">
+        <form id="change-page-form" action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
+            <div>
+                <div id="question">
+                    <h6><b>{{ question }}</b></h6>
+               </div>
+               <div id="answer">
+                   <p>{{ answer }}</p>
+               </div>
             </div>
-            <form action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
-                <div>
-                    <div id="question">
-                        <h2>{{ question }}</h2>
-                   </div>
-                   <div id="answer">
-                       <p style="font-size: 17px;">{{ answer }}</p>
-                   </div>
-                </div>
-                <div id="page">
-                    <p>{{ page }}</p>
-                </div>
-                <div class="page-buttons">
-                    <button type="submit"  name="action" value="previous">⬅️</button>
-                    <button type="submit"  name="action" value="next">➡️</button>
-                </div>
+            <div id="page">
+                <p>{{ page }}</p>
+            </div>
+            <div class="page-buttons">
+                <button type="submit"  name="action" value="previous">&lt;</button>
+                <button type="submit"  name="action" value="next">&gt;</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <form id="chatbot-button">
+        <button type="submit" name="action" value="chatbot" style="font-size: 22px;">&#x1F4AC;</button>
+    </div>
+<div id="chatbot-container">
+    <div id="header-section">
+        <div id="close-chat">
+            <button id="closeButton" type="button" name="action" class="top-chat-buttons"></button>
+        </div>
+        <div id="shrink-chat">
+            <button id="shrinkButton" type="submit" name="action" class="top-chat-buttons"></button>
+        </div>
+        <div id="reset-chat">
+            <button id="resetButton" type="button" name="action" class="top-chat-buttons"></button>
+        </div>            
+    </div>
+    <div id="chatbot-title">
+        <div style="height: 0.5px; background-color: rgba(0, 0, 0, 0.247); width: 100%;"></div>
+        <p style="font-size: 15px; margin-top:5px; color: black;"><i>Crowdsourcing Human Intelligence to face AI</i></p>    
+    </div>
+    
+    <div id="chat-history">
+        <!-- Chat history will be displayed here -->
+    </div>
+    
+    <div id="input-container">
+        <div id="before-chat">
+            <form action="/chatbot" method="POST">
+                <button type="submit" class="btn starters" name="action" value="client_answer">Add to this answer</button>
+                <button type="submit" class="btn starters" name="action" value="client_question">Have a new question?</button>
+            </form>
+        </div>
+        <div id="chat-inputs">
+            <form action="/chatbot" method="POST" id="user-input">
+                <textarea rows="1" id="userInput" name="userInput" autofocus></textarea>
+                <button type="submit"   name="action" value="client_input">
+                    <img src="../static/send.png" width="18px" title="Message icônes créées par onlyhasbi - Flaticon">
+                </button>
+            </form>
+            <form action="/chatbot" method="POST" id="yes-no-form">
+                <button type="submit" class="btn btn-lg yes-button" name="button" value="Yes" >Yes</button>
+                <button type="submit" class="btn btn-lg no-button" name="button" value="No" >No</button>
             </form>
         </div>
     </div>
-    <div>
-        <form id="chatbot-button">
-            <button type="submit" name="action" value="chatbot" style="font-size: 40px;">&#x1F4AC;</button>
-        </div>
-    <div id="chatbot-container">
-        <div id="header-section">
-            <div id="close-chat">
-                <button id="closeButton" type="button" name="action" class="top-chat-buttons"></button>
-            </div>
-            <div id="shrink-chat">
-                <button id="shrinkButton" type="submit" name="action" class="top-chat-buttons"></button>
-            </div>
-            <div id="reset-chat">
-                <button id="resetButton" type="button" name="action" class="top-chat-buttons" ></button>
-            </div>            
-        </div>
-        <div id="chatbot-title">
-            <div style="height: 0.5px; background-color: rgba(0, 0, 0, 0.247); width: 100%;"></div>
-            <p style="font-size: 18px; margin-top:5px; color: black;">Crowdsourcing human intelligence to face AI</p>    
-        </div>
-        
-        <div id="chat-history">
-            <!-- Chat history will be displayed here -->
-        </div>
-        
-        <div id="input-container">
-            <div id="before-chat">
-                <form action="/chatbot" method="POST">
-                    <button type="submit" class="btn starters" name="action" value="client_answer">Add to this answer</button>
-                    <button type="submit" class="btn starters" name="action" value="client_question">Have a new question?</button>
-                </form>
-            </div>
-            <div id="chat-inputs">
-                <form action="/chatbot" method="POST" id="user-input">
-                    <textarea rows="1" id="userInput" name="userInput" autofocus></textarea>
-                    <button type="submit"   name="action" value="client_input">
-                        <img src="../static/send.png" width="20px" title="Message icônes créées par onlyhasbi - Flaticon">
-                    </button>
-                </form>
-                <form action="/chatbot" method="POST" id="yes-no-form">
-                    <button type="submit" class="btn btn-lg yes-button" name="button" value="Yes" >Yes</button>
-                    <button type="submit" class="btn btn-lg no-button" name="button" value="No" >No</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    <style>
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        button {
-            background-color: transparent;
-            border: none;
-        }
-
-        #header {
-            text-align: center;
-            padding-top: 20px;
-        }
-        #book-container{
-            padding: 15%;
-            padding-top: 5%;
-            padding-bottom: 10%;
-            display: block;
-        }
-        
-        #answer {
-            padding-top: 0px;
-            font-size: 18px;
-        }
-
-        .page-buttons {
-            position: fixed;
-            top: 50%;
-            left:50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            justify-content: space-between;
-            width: 90%;
-            max-width: 100%;
-            z-index: 1;
-
-        }
-
-        .page-buttons button {
-            background-color: transparent;
-            border: none;
-            font-size: 25px;
-        }
-
-        #chatbot-button {
-            position: fixed;
-            left: 87vw;
-            bottom: 5vw;
-            z-index: 1;
-        }
-        
-        #chatbot-container {
-            background-color: rgb(255, 254, 254);
-            border-radius: 15px;
-            box-shadow: 0px 0px 10px rgba(33, 33, 33, 0.5); 
-            height: 90%;
-            width: 90%;
-            max-width: 400px;
-            max-height: 600px;
-            top: 5%;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-            position: fixed;
-            display: none;
-            flex-direction: column;
-            align-items: center;   
-            overflow: auto;
-            z-index: 2;
-            left: auto;
-            right: 0;
-            margin: 15px;
-            top: auto;
-            bottom: 0;
-        }
-        
-        #header-section { 
-            margin-inline-start: 32px;
-            padding-top: 8px;
-            display: flex;
-            width: 100%;
-            align-items: center;
-            flex-direction: row;
-        }
-        
-        .spacer {
-            flex-grow: 1;
-        }
-
-        .top-chat-buttons {
-            margin: 3px;
-            border-radius: 50%;       
-            width: 15px;             
-            height: 15px;
-            border: none;             
-            cursor: pointer;         
-            display: flex;            
-            justify-content: center; 
-            align-items: center;
-            padding: 0;
-
-        }
-
-        #shrinkButton {
-            background-color: rgb(255, 204, 0);
-        }
-
-        #shrinkButton::after {
-            content: '';            
-            display: block;
-            width: 60%;              
-            height: 2px;            
-            background-color: rgb(50, 50, 50); 
-            opacity: 0;              
-            transition: opacity 0.3s ease;
-        }
-
-        #shrinkButton:hover::after, #shrinkButton:active::after {
-            opacity: 1;
-        }
-
-        #resetButton {
-            background-color: rgb(80, 162, 255);
-        }
-
-        #resetButton::after {
-            content: '↻';
-            font-size: 14px;
-            color: rgb(255, 255, 255);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        #resetButton:hover::after {
-            content: '↻';
-            opacity: 1;
-        }
-
-        #closeButton {               
-            background-color: rgb(255, 0, 0); 
-        }
-
-        #closeButton::after {
-            content: '\2715';                 
-            font-size: 14px; 
-            color: rgb(50, 50, 50);
-            font-weight: bold;        
-            opacity: 0;                  
-            transition: opacity 0.3s ease; 
-        }
-
-        #closeButton:hover::after, #closeButton:active::after {
-            opacity: 1;
-        }
-
-
-        #chatbot-title {
-            text-align: center;
-            width: 100%;
-            margin-top: 5px;
-        }
-        
-        #input-container {
-            width: 90%;
-            margin-top: auto;
-            padding-bottom: 12px;
-        }
-
-        #before-chat {
-            display: flex;
-            justify-content: space-evenly;
-            margin-bottom: 10px;
-        }
-
-
-        .starters {
-            background-color: rgba(203, 203, 203, 0.5);
-            box-shadow: 0px 0px 10px rgba(217, 216, 216, 0.5);
-            border: none;
-            border-radius: 10px;
-            padding: 8px;
-            padding-left: 20px;
-            padding-right: 20px;
-            margin: 2px;
-        }
-           
-        #chat-history {
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            border: none;
-            width: 90%;
-        }
-
-        .chatbot_response {
-            align-self: flex-start;
-            background-color: rgba(204, 204, 204, 0.5);
-            border-radius: 30px;
-            padding: 10px;
-            margin-bottom: 10px;
-            margin-right: 80px;
-            
-        }
-
-        .user_message {
-            align-self: flex-end;
-            background-color: rgba(204, 204, 204, 0.5);
-            border-radius: 30px;
-            padding: 10px;
-            margin-bottom: 10px;
-            margin-left: 80px;
-        }
-
-    
-        .chat-inputs-text {
-            background-color: rgba(204, 204, 204, 0.5);
-            justify-content: flex-start;
-            align-items: center;
-            border-radius: 25px;
-        }
-
-        .chat-inputs-binary {
-            background-color: white;
-            justify-content: flex-start;
-            align-items: center;
-        }
-        
-        .yes-button {
-            border-radius: 20px;
-            color:white;
-            margin-right: 10px;
-            font-size: 22px;
-            background-color: rgb(74, 136, 74);
-            box-shadow: 0px 0px 10px rgba(203, 203, 203, 0.5);
-        }
-    
-        .no-button {
-            border-radius: 20px;
-            color: white;
-            margin-left: 10px;
-            font-size: 22px;
-            background-color: rgb(231, 83, 83);
-            box-shadow: 0px 0px 10px rgba(203, 203, 203, 0.5);
-        }   
-        
-        #user-input {
-            flex-grow: 1;
-        }
-
-        #userInput {
-            margin: 10px;
-            width: max-content;
-            flex-grow: 1;
-            background-color: transparent;
-            border: none;
-            outline: none !important;
-            resize: none;
-        }
-
-    
-        #yes-no-form {
-            display: none;
-            justify-content: center;
-            flex-grow: 1;
-        }
-
-        #typingIndicator {
-            float: left;
-            clear: both;
-            padding: 10px;
-        }
-
-        #typingIndicator span {
-            display: inline-block;
-            width: 6px; 
-            height: 6px;
-            background-color: rgba(33, 33, 33, 0.651);
-            border-radius: 50%;
-            margin: 3px;
-            animation: dot 1.5s infinite;
-        }
-
-        #typingIndicator span:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        #typingIndicator span:nth-child(2) {
-            animation-delay: 0.5s;
-        }
-
-        #typingIndicator span:nth-child(3) {
-            animation-delay: 1s;
-        }
-
-        @keyframes dot {
-            0%, 40% { opacity: 0; }
-            50%, 100% { opacity: 1; }
-        }
-
-        #top-buttons {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end; 
-            align-items: flex-end;
-            position: fixed;
-            top: 0;
-            right: 0;
-            padding: 20px;
-        }
-
-        #top-buttons button {
-            padding: 5px;
-            padding-left: 10px;
-            font-size: 25px;
-        }
-
-
-        #search-page {  
-            display: none;
-            padding-left: 20px;
-            background-color: white;
-            box-shadow: 0px 0px 10px 0px  rgb(222, 224, 227);
-            border-radius: 30px;
-            z-index: 1;
-        }
-
-
-        #search-input {
-            width : 0px;
-            border: none;
-            background-color: transparent;
-            max-width: 100px;
-            font-size: 16px;
-            outline: none !important;
-            resize: none;
-        }
-
-        #close-search {
-            color: rgb(219, 85, 85);
-            font-weight: lighter;
-        }
-
-
-
-        #question {
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
-
-    </style>
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-</html>
+</div>
+<script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+{%endblock%}

@@ -1,0 +1,30 @@
+{%extends "layout.html"%}
+
+{%block title%}Note to Experts{%endblock%}
+
+{%block content%}
+<div id="book-container">
+    <form action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
+        <div style="padding: 10px;">
+            <p><b>* NOTE TO AI EXPERTS:</b></p>
+            <p><i>Throughout history, writers, filmmakers and artists, imagined society’s upcoming challenges, helping illustrate the future in ways a dry scientific report would struggle to communicate.</i></p>
+            <p><i>As a creative my goal is to encourage the public to freely start to explore ideas around AI. Consequently in this book I will avoid bogging down the reader with excessive technical descriptions, terminologies and metrics. </i></p>
+            <p><i>To further simplify the discourse I will heretically and freely use AI synonymously with AGI… Let's not be overly sensitive! </i></p>
+        </div>
+        <div style="border: 1px solid black; padding: 10px;">
+            <p><b>AI DEFINITIONS: </b></p>
+            <p><b>AI: </b>Narrow AI is the type of artificial intelligence that can only perform specific tasks and lacks the ability to adapt or learn new types of things. </p>
+            <p><b>AGI: </b>Artificial General Intelligence, is referred to a type of AI that performs a wide range of tasks and abilities, much like a human. </p>
+            <p><b>Super Intelligence: </b>is referred to an AGI that surpasses our intelligence, becomes autonomous, and can improve its own code and objectives. </p>
+        </div>
+        <div class="page-buttons">
+            <button type="submit"  name="action" value="previous">&lt;</button>
+            <button type="submit"  name="action" value="next">&gt;</button>
+        </div>
+        <div id="page" style="display: none;">
+            <p>0</p>
+        </div>
+    </form>
+    <script type="module" src="{{ url_for('static', filename='js/first_pages.js') }}"></script>
+</div>
+{% endblock %}

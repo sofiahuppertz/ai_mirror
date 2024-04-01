@@ -3,7 +3,11 @@ import * as chatbot_ui from './chatbot_ui.js';
 import * as toolbar from './toolbar.js';
 
 
+
 document.addEventListener('DOMContentLoaded', (event) => {
+
+    // Handle page transition
+    utils.handlePageTransition();
 
     // Add to the html all the divs of the chatbot
     utils.add_previous_chat();
@@ -67,8 +71,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 
+    chatbot_ui.handlePageLink();
+    toolbar.showSearchPage();
+    chatbot_ui.setupSwipe();
+
 });
-
-toolbar.showSearchPage();
-
-chatbot_ui.handlePageLink();

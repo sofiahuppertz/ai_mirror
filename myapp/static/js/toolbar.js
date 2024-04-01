@@ -3,8 +3,8 @@ import * as utils from './utils.js';
 // Function to search for a page
 
 export function showSearchPage() {
-    const showSearch = document.getElementById('show-search-bar');
-    const searchPageForm = document.getElementById('search-page');
+    const showSearch = document.getElementById('menu');
+    const searchPageForm = document.getElementById('content-menu');
 
 
     const clonedShowSearch = showSearch.cloneNode(true);
@@ -13,8 +13,9 @@ export function showSearchPage() {
     clonedShowSearch.addEventListener('click', function(event) {
         event.preventDefault();
         
+        console.log("hey");
         clonedShowSearch.style.display = 'none';
-        searchPageForm.style.display = 'flex';
+        searchPageForm.style.display = 'block';
         
         const searchInput = document.getElementById('search-input');
         
@@ -38,8 +39,8 @@ function closeSearchEvent(event) {
     
     event.preventDefault();
 
-    const searchPageForm = document.getElementById('search-page');
-    const showSearch = document.getElementById('show-search-bar');
+    const searchPageForm = document.getElementById('content-menu');
+    const showSearch = document.getElementById('menu');
 
     searchPageForm.removeEventListener('keydown', keyDownSearchForm);
 
@@ -64,7 +65,7 @@ function closeSearchEvent(event) {
 
 export function closeSearch() {
 
-    const closeSearch = document.getElementById('close-search');
+    const closeSearch = document.getElementById('close-menu');
 
     const clonedCloseSearch = closeSearch.cloneNode(true);
     closeSearch.parentNode.replaceChild(clonedCloseSearch, closeSearch);
@@ -77,7 +78,7 @@ export function closeSearch() {
 function handleSearchPage(event) {
 
     event.preventDefault();
-    const searchPageForm = document.getElementById('search-page');
+    const searchPageForm = document.getElementById('content-menu');
 
     var input = document.getElementById('search-input').value.trim();        
     // Empty input field
@@ -108,7 +109,7 @@ export function searchPage() {
     
     const searchButton = document.getElementById('search-button');
     const clonedSearchButton = searchButton.cloneNode(true);
-    const searchPageForm = document.getElementById('search-page');
+    const searchPageForm = document.getElementById('content-menu');
     //const clonedPageForm = searchPageForm.cloneNode(true);
 
 

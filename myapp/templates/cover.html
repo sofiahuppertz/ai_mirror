@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{%block title%}Cover{%endblock%}
+{%block content%}
+<div id="book-cover">
+    <form action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
+        <img id="coverImage" src="{{ url_for('static', filename='cover.svg') }}" alt="Cover Image">
+        <div class="page-button">
+            <button type="submit"  name="action" value="next">&gt;</button>
+        </div>
+        <div id="page" style="display: none;">
+            <p>-3</p>
+        </div>
+    </form>
+</div>
+<script type="module" src="{{ url_for('static', filename='js/cover.js') }}"></script>
+{%endblock%}

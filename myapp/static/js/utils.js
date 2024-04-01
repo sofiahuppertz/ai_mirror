@@ -1,4 +1,53 @@
 
+// Function to handle event to change page.
+export function change_page(value, pageNumber) {
+    fetch('/page/' + pageNumber, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'action': value
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = '/';
+        }
+    });
+}
+
+
+// FUNCTION TO HANDLE PAGE TRANSITION
+export function handlePageTransition() {
+    window.onload = function() {
+        console.log('loaded');
+        document.getElementById('book-container').classList.add('loaded');
+    };
+
+    // Get the page buttons
+    const pageButtons = document.querySelectorAll('.page-buttons button');
+
+    // Add event listener to each button
+    pageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            document.getElementById('book-container').classList.remove('loaded');
+        });
+    });
+}
+
+
+// FUNCTION TO CHECK IF PAGE IS ZOOMED
+export function isPageZoomed() {
+    var viewportWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var windowWidth = window.outerWidth || window.innerWidth;
+
+    var zoomFactor = windowWidth / viewportWidth;
+
+	return zoomFactor !== 1;
+}
+
+
 // FUNCTION TO APPEAR MESSAGES IN CHAT
 
 export function send_message(message, className){
@@ -108,3 +157,5 @@ export function isValidPageNumber(input) {
     }
     return true;
 }
+
+

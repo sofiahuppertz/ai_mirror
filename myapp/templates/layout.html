@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <title>{% block title %}{%endblock%}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="header">
+        <form id="go-author_bio" action="{{url_for('author_bio')}}" method="GET">
+            <button>
+                <img src="../static/book-header.jpg" style="width: 150px;">
+            </button>
+        </form>
+    </div>
+    <div id="top-buttons">
+        <form id="menu">
+            <button id="menu-btn">Menu</button>
+        </form>
+        <form id="content-menu">
+            <div id="close-div">   
+                <button id="close-menu" value="close">&#x2715;</button>
+            </div>
+            <div style="width: 80%; border: 1px solid black;"></div>
+            <div class="menu-elem">
+                <div><b>INTRODUCTION</b></div>
+                <div>+</div>
+            </div>
+            <div style="border: 1px solid black;"></div>
+            <div class="menu-elem">
+                <div><b>INTRODUCTION</b></div>
+                <div>+</div>
+            </div>
+            <div style="border: 1px solid black;"></div>
+            <div class="menu-elem">
+                <div><b>INTRODUCTION</b></div>
+                <div>+</div>
+            </div>
+            <div style="border: 1px solid black;"></div>
+            <div class="menu-elem">
+                <div><b>INTRODUCTION</b></div>
+                <div>+</div>
+            </div>
+            <div style="border: 1px solid black;"></div>
+            <input type="text" id="search-input" name="search" placeholder="Page number" autocomplete="off">
+            <button id="search-button"  value="search">&#128269;</button>
+        </form>
+    </div>
+    {% block content %}{% endblock %}
+</body>
+</html>

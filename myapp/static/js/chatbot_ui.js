@@ -310,7 +310,6 @@ export function handlePageLink () {
 
             event.preventDefault();
     
-            console.log("HERE");
             var pageNumber = event.target.getAttribute('data-page-number');
             utils.postData('GET', '/page/' + pageNumber, {index: pageNumber}, false)
             .then(response => {
@@ -322,3 +321,70 @@ export function handlePageLink () {
     });
 }
 
+// FUNCTION TO HANDLE SWIPE EVENTS
+
+
+function handleSwipe(swipeDirection) {
+    var pageNumberElement = document.getElementById('page');
+    var pageNumber = parseInt(pageNumberElement.querySelector('p').innerText);
+    var value;
+
+    if (swipeDirection === 'left') {  
+        value = "next";
+    } else if (swipeDirection === 'right') {
+        value = "previous";
+    }
+
+    utils.change_page(value, pageNumber);
+}
+
+export function setupSwipe() {
+    // Variables to store touch position
+    let startX, startY;
+
+    // Add event listeners for touch events
+    document.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+
+
+    document.addEventListener('touchend', function(e) {
+
+	if (utils.isPageZoomed()) {
+	    return;
+	}
+
+	let endX = e.changedTouches[0].clientX;
+        let endY = e.changedTouches[0].clientY;
+        let deltaX = endX - startX;
+        let deltaY = endY - startY;
+        let swipeDirection;
+        // Determine swipe direction based on horizontal movement
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            swipeDirection = deltaX > 0 ? 'right' : 'left';
+        }
+        // Call handleSwipe function with the detected swipe direction
+        if (swipeDirection) {
+            handleSwipe(swipeDirection);
+        }
+    });
+}
+
+// Function to handle buttons to cahnge page
+
+//export function handlePageButtons() {
+//
+//    const changePageForm = document.getElementById('change-page-form');
+//    const pageNumberElement = document.getElementById('page');
+//    const pageNumber = parseInt(pageNumberElement.querySelector('p').innerText);
+//    
+//    changePageForm.addEventListener('submit', function(event) {
+//        console.log("pressed");
+//        console.log(event.submitter.value);
+//        console.log(pageNumber);
+//
+//        event.preventDefault();
+//        utils.change_page(event.submitter.value, pageNumber);
+//    });
+//}

@@ -8,7 +8,6 @@ def prepare_json(session, input, response, question_type, next_route, buttons, r
     
     if question_type and session:
         session['question_type'] = question_type
-    
     utils.append_to_history(session, input, utils.remove_link(response))
     session.modified = True
 
@@ -51,7 +50,7 @@ def handle_first_response(client, session, input, db_Session ):
         return prepare_json(session, input, chatbot_responses[0], 'B', "/chatbot" , "True", "False")
 
     elif session['path'] == 'C':
-        return handle_invalid_response(session)
+        return handle_invalid_response(session, input)
     else:
         prepare_json(session, input, chatbot_responses[11], None, "/", "False", "True")
 
@@ -110,12 +109,13 @@ def handle_next_response(session, input, db_Session):
             return register_person(session, input, question_type)
 
     if input != 'Yes' and input != 'No':
-        return handle_invalid_response(session)
+        return handle_invalid_response(session, input)
     return prepare_json(session, input, chatbot_responses[9], None, "/", "False", "True")
 
 
 
-def handle_invalid_response(session):
-    return prepare_json(session, input, chatbot_responses[1], None, "/", "False", "True")
+def handle_invalid_response(session, input):
+    session.pop('path')
+    return prepare_json(session, input, chatbot_responses[1], None, "/chatbot", "False", "False")
 
 

@@ -2,7 +2,8 @@ import csv
 from models import Page, Question, Answer, Person
 import re
 from sqlalchemy import func
-
+from botocore.exceptions import ClientError
+import json
 
 # Function to remove links 
 
@@ -28,7 +29,7 @@ def append_to_history(session, user_message, chatbot_response):
 # DATABASE UTILS
 
 def get_question_and_answer(page_id, db_Session):
-
+    
     db_session = db_Session()
 
     page = db_session.query(Page).get(page_id)
@@ -39,7 +40,7 @@ def get_question_and_answer(page_id, db_Session):
         return page.question, page.answer
     else:
         print("No data found for the given ID.")
-        return None, None
+        return "Not found", "Not found",
 
 
 # Funtion to count rows of a table
@@ -148,7 +149,32 @@ def get_embedding(client, text: str, model):
 
 def isValidPage(page_number, total_pages):
     
-    if page_number > 0 and page_number <= total_pages:
+    if page_number >= -3 and page_number <= total_pages:
         return True
     else:
         return False
+
+
+# AWS Secrets Manager
+    
+def get_secret(session, secret_name, region_name):
+
+    # Create a Secrets Manager client
+    
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        raise e
+
+    secret = get_secret_value_response['SecretString']
+    secret = json.loads(secret)
+    value = secret[secret_name]
+
+    return value
