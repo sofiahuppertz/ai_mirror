@@ -13,6 +13,7 @@ export function handleMenuForm() {
     clonedMenuForm.addEventListener('click', function(event) {
         
         event.preventDefault();
+        console.log("here");
         
         const menuBtn = clonedMenuForm.querySelector('#menu-btn');
         const closeMenuBtn = clonedMenuForm.querySelector('#close-menu-btn');
@@ -21,6 +22,7 @@ export function handleMenuForm() {
         const symbolBtns = document.querySelectorAll('.symbol');
         
         let action = event.target.value;
+        console.log(action);
         if (action === 'open') {
             menuBtn.style.display = 'none';
             closeMenuBtn.style.display = 'block';

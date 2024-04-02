@@ -326,7 +326,7 @@ export function handlePageLink () {
 
 function handleSwipe(swipeDirection) {
     var pageNumberElement = document.getElementById('page');
-    var pageNumber = parseInt(pageNumberElement.querySelector('p').innerText);
+    var pageNumber = parseInt(pageNumberElement.querySelector('h7').innerText);
     var value;
 
     if (swipeDirection === 'left') {  

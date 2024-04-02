@@ -10,7 +10,7 @@
 </head>
 <body>
     <div id="header">
-        <form id="go-author_bio" action="{{url_for('author_bio')}}" method="GET">
+        <form id="go-author_bio" action="{{url_for('cover')}}" method="GET">
             <button>
                 <img src="../static/book-header.jpg" style="width: 150px;">
             </button>
@@ -18,35 +18,65 @@
     </div>
     <div id="top-buttons">
         <form id="menu">
-            <button id="menu-btn">Menu</button>
+            <button id="menu-btn" value="open">Menu</button>
+            <button id="close-menu-btn" value="close">&#x2715;</button>
         </form>
         <form id="content-menu">
-            <div id="close-div">   
-                <button id="close-menu" value="close">&#x2715;</button>
-            </div>
-            <div style="width: 80%; border: 1px solid black;"></div>
             <div class="menu-elem">
-                <div><b>INTRODUCTION</b></div>
-                <div>+</div>
+                <button data-value="elem-1"><b>INTRODUCTION</b></button>
+                <button data-value="elem-1">&rarr;</button>
             </div>
-            <div style="border: 1px solid black;"></div>
+            <div style="border: 0.5px solid black; margin-top: 10px; margin-bottom: 10px;"></div>
             <div class="menu-elem">
-                <div><b>INTRODUCTION</b></div>
-                <div>+</div>
+                <button data-value="elem-2"><b>A CALL TO ADVENTURE</b></button>
+                <button data-value="elem-2" class="symbol">+</button>
             </div>
-            <div style="border: 1px solid black;"></div>
+            <div class="menu-sub-elem elem-2">
+                <button>INTERRUPTION OF AN ORDINARY LIFE</button>
+            </div>
+            <div class="menu-sub-elem elem-2">
+                <button>START TRAINING TO THINK ABOUT AI</button>
+            </div>
+            <div class="menu-sub-elem elem-2">
+                <button>CONFRONTING RESISTANCE & DENIAL</button>
+            </div>
+            <div class="menu-sub-elem elem-2">
+                <button>THE KEYS TO NAVIGATE AI</button>
+            </div>
+            <div style="border: 0.5px solid black; margin-top: 10px; margin-bottom: 10px;"></div>
             <div class="menu-elem">
-                <div><b>INTRODUCTION</b></div>
-                <div>+</div>
+                <button data-value="elem-3"><b>THE NEW AI WORLD</b></button>
+                <button data-value="elem-3" class="symbol">+</button>
             </div>
-            <div style="border: 1px solid black;"></div>
+            <div class="menu-sub-elem elem-3">
+                <button>JOB MARKETS AND INDUSTRIES</button>
+            </div>
+            <div class="menu-sub-elem elem-3">
+                <button>CREATIVE INDUSTRIES / THE SWORD OF PARADOX</button>
+            </div>
+            <div class="menu-sub-elem elem-3">
+                <button>NEW PARADIGMS IN EDUCATION AND KNOWLEDGE</button>
+            </div>
+            <div style="border: 0.5px solid black; margin-top: 10px; margin-bottom: 10px;"></div>
             <div class="menu-elem">
-                <div><b>INTRODUCTION</b></div>
-                <div>+</div>
+                <button data-value="elem-4"><b>CONFLICT</b></button>
+                <button data-value="elem-4" class="symbol">+</button>
             </div>
-            <div style="border: 1px solid black;"></div>
-            <input type="text" id="search-input" name="search" placeholder="Page number" autocomplete="off">
-            <button id="search-button"  value="search">&#128269;</button>
+            <div class="menu-sub-elem elem-4">
+                <button>RISE OF THE CORPORATE NATIONS </button>
+            </div>
+            <div class="menu-sub-elem elem-4">
+                <button>REVOLUTIONS & CIVIL WARS</button>
+            </div>
+            <div class="menu-sub-elem elem-4">
+                <button>DEATH OF THE HERO</button>
+            </div>
+            <div class="menu-sub-elem elem-4">
+                <button>REBIRTH & TRANSFORMATION</button>
+            </div>
+            <div class="menu-sub-elem elem-4">
+                <button>EPILOGUE / THE AI MIRROR</button>
+            </div>
         </form>
     </div>
     {% block content %}{% endblock %}
