@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     chatbot_ui.handlePageLink();
-    toolbar.showSearchPage();
+    toolbar.handleMenuForm();
     chatbot_ui.setupSwipe();
 
 });
