@@ -13,24 +13,28 @@ export function handleMenuForm() {
     clonedMenuForm.addEventListener('click', function(event) {
         
         event.preventDefault();
-        console.log("here");
-        
+
         const menuBtn = clonedMenuForm.querySelector('#menu-btn');
         const closeMenuBtn = clonedMenuForm.querySelector('#close-menu-btn');
         const contentMenu = document.getElementById('content-menu');
         const subelements = document.querySelectorAll('.menu-sub-elem');
         const symbolBtns = document.querySelectorAll('.symbol');
         
-        let action = event.target.value;
-        console.log(action);
-        if (action === 'open') {
+        let action = event.target;
+        if (action.tagName !== 'BUTTON') {
+            action = action.closest('button');
+        }
+
+        let value = action.dataset.value;
+        console.log(value);
+        if (value === 'open') {
             menuBtn.style.display = 'none';
             closeMenuBtn.style.display = 'block';
             contentMenu.style.display = 'block';
 
             handleMenuContent();
         }
-        else if (action === 'close') {
+        else if (value === 'close') {
             subelements.forEach((subelement) => {
                 subelement.style.display = 'none';
             });

@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const chatbot_button = document.getElementById('chatbot-button');
     const chatbot_container = document.getElementById('chatbot-container');
     const shrink_button = document.getElementById('shrink-chat');
-    const close_button = document.getElementById('close-chat');
 
     // Display chatbot 
     chatbot_button.addEventListener('click', (event) => {
@@ -50,18 +49,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         chatbot_button.style.display = 'block';
     }
 
-    // Close chatbot when close button is clicked
-    shrink_button.addEventListener('click', (event) => {
-        shrink_chatbot
-    });
-
-    // Close and clean chatbot when close button is clicked
-    close_button.addEventListener('click', (event) => {
-        event.preventDefault();
-        chatbot_ui.clearConversation();
-        chatbot_container.style.display = 'none';
-        chatbot_button.style.display = 'block';
-    });
 
     // Close chatbot when escape key is pressed
     window.addEventListener('keydown', (event) => {

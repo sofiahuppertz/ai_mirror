@@ -36,6 +36,7 @@ function handleTextInput(event, route) {
     event.preventDefault();
 
     document.getElementById('before-chat').style.display = 'none';
+    document.getElementById('chatbot-title').style.display = 'none';
 
     // Check if user input is empty
     if (!utils.isInputNotEmpty()){
@@ -146,6 +147,7 @@ export function binaryForm(route) {
 
     //Hide before chat buttons
     document.getElementById('before-chat').style.display = 'none';
+    document.getElementById('chatbot-title').style.display = 'none';
 
     // Change the class of chat-inputs
     const chatInputs = document.getElementById('chat-inputs');
@@ -181,6 +183,8 @@ export function resume_chat(currentFunction, nextRoute) {
     
     // Hide before-chat buttons
     document.getElementById('before-chat').style.display = 'none';
+    document.getElementById('chatbot-title').style.display = 'none';
+
     // Show chat inputs
     document.getElementById('chat-inputs').style.display = 'flex';
 
@@ -206,7 +210,7 @@ export function start_chat(){
     
     // Show before-chat buttons
     document.getElementById('before-chat').style.display = 'flex';
-    
+    document.getElementById('chatbot-title').style.display = 'flex';
 
     textFom('/chatbot', true);
 
@@ -236,6 +240,7 @@ export function first_chatbot_message(button) {
 
     let chatbotMessage;
 
+    document.getElementById('chatbot-title').style.display = 'none';
     document.getElementById('before-chat').style.display = 'none';
     
     if (button.value == 'client_answer') {
@@ -295,11 +300,11 @@ export function endConversation() {
     // Hide Yes/No buttons and input field, only show the reset button
     const binary_form = document.getElementById('yes-no-form');
     const user_input = document.getElementById('user-input');
-    const resetChat = document.getElementById('reset-chat');
+    // const resetChat = document.getElementById('reset-chat');
     
     binary_form.style.display = 'none';
     user_input.style.display = 'none';
-    resetChat.style.display = 'flex';
+    // resetChat.style.display = 'flex';
 }
 
 // FUNCTION FOR HANDLING PAGE LINKS

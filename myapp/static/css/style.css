@@ -81,8 +81,8 @@ p {
     box-shadow: 0px 0px 10px rgba(178, 175, 175, 0.5); 
     height: 90%;
     width: 90%;
-    width: 420px;
-    max-height: 650px;  
+    max-width: 400px;
+    max-height: 600px;  
     position: fixed;
     z-index: 2;
     left: auto;
@@ -109,98 +109,28 @@ p {
         left: 50%;
         top: 50%;
         margin: 0px;
-
         transform: translate(-50%, -50%);
     }
 }
 #header-section { 
-    margin-inline-start: 32px;
-    padding-top: 8px;
+
     display: flex;
-    width: 100%;
+    justify-content: flex-end;
     align-items: center;
-    flex-direction: row;
-}
-
-.spacer {
-    flex-grow: 1;
-}
-
-.top-chat-buttons {
-    margin: 5px;
-    margin-bottom: 3px;
-    margin-top: 3px;
-    border-radius: 50%;       
-    width: 11px;             
-    height: 11px;
-    border: none;             
-    cursor: pointer;         
-    display: flex;            
-    justify-content: center; 
-    align-items: center;
-    padding: 0;
+    padding-top: 10px;
+    width: 90%;
 
 }
 
-#shrinkButton {
-    background-color: rgb(255, 204, 0);
-}
-
-#shrinkButton::after {
-    content: '';            
-    display: block;
-    width: 60%;              
-    height: 1px;            
-    background-color: rgb(50, 50, 50); 
-    opacity: 0;              
-    transition: opacity 0.3s ease;
-}
-
-#shrinkButton:hover::after, #shrinkButton:active::after {
-    opacity: 1;
-}
-
-#resetButton {
-    background-color: rgb(80, 162, 255);
-}
-
-#resetButton::after {
-    font-family: 'Courier New', Courier, monospace;
-    content: '↻';
-    font-size: 18px;
-    color: rgb(0, 0, 0);
-    background-color: white;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-#resetButton:hover::after {
-    content: '↻';
-    opacity: 1;
-}
-
-#closeButton {               
-    background-color: rgb(255, 0, 0); 
-}
-
-#closeButton::after {
-    content: '\2715';                 
-    font-size: 10px; 
-    color: rgb(80, 74, 74);        
-    opacity: 0;                  
-    transition: opacity 0.3s ease; 
-}
-
-#closeButton:hover::after, #closeButton:active::after {
-    opacity: 1;
-}
 
 
 #chatbot-title {
+    font-size: 22px;
+    position: relative;
+    top: 30%;
+    color: black;
     text-align: center;
-    width: 100%;
-    margin-top: 5px;
-    margin-bottom: 15px;
+    width: 90%;
 }
 
 #input-container {
@@ -228,6 +158,7 @@ p {
 }
    
 #chat-history {
+    padding-top: 5%;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -380,7 +311,7 @@ p {
     height: auto;
     background-color: white;
     z-index: 1;
-    box-shadow: 0px 0px 10px rgba(33, 33, 33, 0.5);
+    box-shadow: 0px 0px 10px rgba(159, 158, 158, 0.5);
 }
 
 .menu-elem button {

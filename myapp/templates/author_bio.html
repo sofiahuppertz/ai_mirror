@@ -6,7 +6,7 @@
 <div id="book-container">
     <div id="author_biography">
         <div id="author-image">
-            <img src="https://www.semanadelamadera.cl/wp-content/uploads/2016/08/Sebastián-Errázuriz-1000x500px.jpg" alt="Sebastian Errazuriz" style="width: 100%; max-width: 500px; height: 100%;">
+            <img src="https://www.semanadelamadera.cl/wp-content/uploads/2016/08/Sebastián-Errázuriz-1000x500px.jpg" alt="Sebastian Errazuriz" style="margin-bottom: 10px; width: 100%; max-width: 500px; height: 100%;">
         </div>
         <form action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
             <h6 id="author-name"><b>SEBASTIAN ERRAZURIZ</b></h6>
@@ -18,7 +18,7 @@
                 <button type="submit"  name="action" value="next">&gt;</button>
             </div>
             <div id="page" style="display: none;">
-                <p>-2</p>
+                <h7>-2</h7>
             </div>
         </form>
     </div>

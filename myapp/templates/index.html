@@ -30,25 +30,20 @@
     </div>
 <div id="chatbot-container">
     <div id="header-section">
-        <div id="close-chat">
-            <button id="closeButton" type="button" name="action" class="top-chat-buttons"></button>
-        </div>
-        <div id="shrink-chat">
-            <button id="shrinkButton" type="submit" name="action" class="top-chat-buttons"></button>
-        </div>
+        
         <div id="reset-chat">
-            <button id="resetButton" type="button" name="action" class="top-chat-buttons"></button>
+            <button id="resetButton" type="button" name="action" class="top-chat-buttons"><img src="../static/reload.svg" style="width: 20px;"></button>
         </div>            
+        <div id="shrink-chat">
+            <button id="shrinkButton" type="submit" name="action" class="top-chat-buttons"><img src="../static/close.svg" style="width: 30px;"></button>
+        </div>
     </div>
     <div id="chatbot-title">
-        <div style="height: 0.5px; background-color: rgba(0, 0, 0, 0.247); width: 100%;"></div>
-        <h7 style="font-size: 16px; margin-top:5px; margin-bottom: 10px; color: black;"><i>Crowdsourcing Human Intelligence to face AI</i></h7>    
+        <h7><i>Crowdsourcing Human Intelligence to face AI.</i></h7>    
     </div>
-    
     <div id="chat-history">
         <!-- Chat history will be displayed here -->
     </div>
-    
     <div id="input-container">
         <div id="before-chat">
             <form action="/chatbot" method="POST">
