@@ -26,7 +26,6 @@ export function handleMenuForm() {
         }
 
         let value = action.dataset.value;
-        console.log(value);
         if (value === 'open') {
             menuBtn.style.display = 'none';
             closeMenuBtn.style.display = 'block';
@@ -58,6 +57,7 @@ export function handleMenuContent() {
     const menuContent = document.getElementById('content-menu');
     const clonedMenuContent = menuContent.cloneNode(true);
     menuContent.parentNode.replaceChild(clonedMenuContent, menuContent);
+    const sections = [7, 15, 28, 44, 51, 67, 83, 92, 104, 116, 127, 137];
 
     clonedMenuContent.addEventListener('click', function(event) {
         event.preventDefault();
@@ -71,11 +71,16 @@ export function handleMenuContent() {
         }
         
         const value = target.dataset.value;
-
+        const numValue = Number(value);
+        
         if (value == 'elem-1') {
             utils.change_page('next', 0);
         }
+        else if (!isNaN(numValue) && numValue >= 0 && numValue <= 11) {
+            utils.change_page('next', sections[numValue] - 1);
+        }
         else {
+
 
             let subelements = clonedMenuContent.querySelectorAll(`.${value}`);
 
@@ -90,7 +95,6 @@ export function handleMenuContent() {
                     symbolBtn.innerHTML = (symbolBtn.innerHTML == '+') ? '-' : '+';
                 }
             });
-
         }
         
 

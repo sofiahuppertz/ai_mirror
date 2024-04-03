@@ -20,8 +20,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Display chatbot 
     chatbot_button.addEventListener('click', (event) => {
 
-        console.log("hello");
-
         event.preventDefault();
         
         chatbot_container.style.display = 'flex';
