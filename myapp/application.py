@@ -136,6 +136,8 @@ def page(page_number):
         
     # Extract the question and answer from the database
     question, answer = utils.get_question_and_answer(session['page_num'], db_Session)
+    answer = answer.split('\n')
+    answer = '</p><p>'.join(answer)
 
     return render_template("index.html", question=question, answer=answer, page=session['page_num'])
 

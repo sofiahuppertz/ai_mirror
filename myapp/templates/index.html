@@ -11,7 +11,7 @@
                     <h6><b>{{ question }}</b></h6>
                </div>
                <div id="answer">
-                   <p>{{ answer }}</p>
+                   <div>{{ answer | safe }}</div>
                </div>
             </div>
             <div id="page">
@@ -53,7 +53,7 @@
         </div>
         <div id="chat-inputs">
             <form action="/chatbot" method="POST" id="user-input">
-                <textarea rows="1" id="userInput" name="userInput" autofocus></textarea>
+                <textarea rows="1" id="userInput" name="userInput" autofocus placeholder="Message"></textarea>
                 <button type="submit"   name="action" value="client_input">
                     <img src="../static/images/send-icon.webp" width="18px" title="Message icônes créées par onlyhasbi - Flaticon">
                 </button>
