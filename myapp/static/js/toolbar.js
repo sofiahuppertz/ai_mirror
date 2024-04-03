@@ -31,6 +31,8 @@ export function handleMenuForm() {
             menuBtn.style.display = 'none';
             closeMenuBtn.style.display = 'block';
             contentMenu.style.display = 'block';
+            clonedMenuForm.style.left = 'auto';
+            clonedMenuForm.style.right = '2vw';
 
             handleMenuContent();
         }
@@ -44,6 +46,8 @@ export function handleMenuForm() {
             menuBtn.style.display = 'flex';
             contentMenu.style.display = 'none';
             closeMenuBtn.style.display = 'none';
+            clonedMenuForm.style.right = 'auto';
+            clonedMenuForm.style.left = '2vw';
 
         }
 

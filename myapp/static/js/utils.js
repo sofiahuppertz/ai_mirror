@@ -21,7 +21,6 @@ export function change_page(value, pageNumber) {
 // FUNCTION TO HANDLE PAGE TRANSITION
 export function handlePageTransition() {
     window.onload = function() {
-        console.log('loaded');
         document.getElementById('book-container').classList.add('loaded');
     };
 
