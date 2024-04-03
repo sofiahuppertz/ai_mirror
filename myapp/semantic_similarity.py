@@ -76,9 +76,9 @@ def similarity(client, Session, user_message):
         
         page = page.id
 
-        response = f"Hello! We have a similar question: {question[0]} on page {page},  "
-        response += f'<a href="#" id="page-link" data-page-number="{page}">check page here.</a>'
-        response += "<p>Does this answer your question?</p>"
+        response = f"Hello! We have a similar question: \"{question[0]} \" You can check the answer "
+        response += f'<a href="#" id="page-link" data-page-number="{page}">here</a>'
+        response += ". Does this answer your question?"
             
     except ValueError as e:
         print(e)
