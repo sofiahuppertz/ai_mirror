@@ -8,6 +8,7 @@ from openai import OpenAI
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import utils
+from semantic_similarity import generate_embeddings
 
 
 # SESSION AWS

@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, LargeBinary, ForeignKey
+from sqlalchemy.orm import relationship, Session
 from sqlalchemy.ext.declarative import declarative_base
+import csv
 
 Base = declarative_base()
 
@@ -10,6 +11,7 @@ class Page(Base):
     id = Column(Integer, primary_key=True)
     question = Column(String)
     answer = Column(String)
+    image = Column(LargeBinary)
 
     new_answers = relationship("Answer", backref="page")
    
