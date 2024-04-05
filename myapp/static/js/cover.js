@@ -1,9 +1,9 @@
-import * as toolbar from './toolbar.js'
-import * as utils from './utils.js'
-import { setupSwipe } from './chatbot_ui.js';
+import * as menu from './menu.js'
+import * as chatbot_ui from './chatbot_ui.js';
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    toolbar.handleMenuForm();
-    setupSwipe();
+    menu.handleMenuForm();
+    chatbot_ui.setupSwipe();
+    chatbot_ui.handlePageButtons();
 
 });

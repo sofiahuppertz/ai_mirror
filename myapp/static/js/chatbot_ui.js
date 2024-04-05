@@ -378,18 +378,14 @@ export function setupSwipe() {
 
 // Function to handle buttons to cahnge page
 
-//export function handlePageButtons() {
-//
-//    const changePageForm = document.getElementById('change-page-form');
-//    const pageNumberElement = document.getElementById('page');
-//    const pageNumber = parseInt(pageNumberElement.querySelector('p').innerText);
-//    
-//    changePageForm.addEventListener('submit', function(event) {
-//        console.log("pressed");
-//        console.log(event.submitter.value);
-//        console.log(pageNumber);
-//
-//        event.preventDefault();
-//        utils.change_page(event.submitter.value, pageNumber);
-//    });
-//}
+export function handlePageButtons() {
+
+    const changePageForm = document.getElementById('change-page-form');
+    const pageNumberElement = document.getElementById('page');
+    const pageNumber = parseInt(pageNumberElement.querySelector('h7').innerText);
+    
+    changePageForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        utils.change_page(event.submitter.value, pageNumber);
+    });
+}

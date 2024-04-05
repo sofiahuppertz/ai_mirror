@@ -1,6 +1,28 @@
 
 // Function to handle event to change page.
 export function change_page(value, pageNumber) {
+    
+    // Check if we are at the last page of a chapter and the user wants to go to the next page.
+    const chapters_last_pages = [0, 6, 14, 27, 43, 50, 66, 82, 91, 103, 115, 126, 136];
+    
+    if (chapters_last_pages.includes(pageNumber) && value === 'next') {
+        // Get the index of the current page in the chapters_last_pages array
+        let index = chapters_last_pages.indexOf(pageNumber);
+        
+        // Define the transition image adress
+        let imageAdress = '../static/images/transitions/transition-' + index + '.svg';
+        // Show the transition.
+        const overlay = document.getElementById('transition-overlay');
+        const transitionImage = document.getElementById('transition-img');
+
+        transitionImage.src = imageAdress;
+        overlay.style.visibility = 'visible';
+
+        setTimeout(() => {
+            overlay.style.visibility = 'hidden';
+        }, 3000);
+    }
+
     fetch('/page/' + pageNumber, {
         method: 'POST',
         headers: {

@@ -3,7 +3,7 @@
 {%block title%}Cover{%endblock%}
 {%block content%}
 <div id="book-cover">
-    <form action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
+    <form id="change-page-form" method="POST">
         <img id="coverImage" src="{{ url_for('static', filename='/images/cover.svg') }}" alt="Cover Image">
         <div class="link-container">
             <a href="https://sebastian.studio">

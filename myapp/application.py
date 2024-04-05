@@ -8,7 +8,6 @@ from openai import OpenAI
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import utils
-from semantic_similarity import generate_embeddings
 
 
 # SESSION AWS
@@ -60,25 +59,25 @@ def index():
 
 
 
-@application.route("/cover", methods=["GET"])
+@application.route("/cover", methods=["GET", "POST"])
 def cover():
     session['page_num'] = -3
     return render_template("cover.html")
 
 
-@application.route("/author_bio", methods=["GET"])
+@application.route("/author_bio", methods=["GET", "POST"])
 def author_bio():
     session['page_num'] = -2
     return render_template("author_bio.html")
 
 
-@application.route("/copyright", methods=["GET"])
+@application.route("/copyright", methods=["GET", "POST"])
 def copyright():
     session['page_num'] = -1
     return render_template("copyright.html")
 
 
-@application.route("/note_to_experts", methods=["GET"])
+@application.route("/note_to_experts", methods=["GET", "POST"])
 def note_to_experts():
     session['page_num'] = 0
     return render_template("note_to_experts.html")

@@ -5,7 +5,7 @@
 {%block content%}
 <div id="book-container">
     <div id="book">
-        <form id="change-page-form" action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
+        <form id="change-page-form" method="POST">
             <div>
                 <div id="question">
                     <h6><b>{{ question }}</b></h6>
@@ -65,5 +65,6 @@
         </div>
     </div>
 </div>
+
 <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 {%endblock%}

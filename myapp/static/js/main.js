@@ -1,6 +1,6 @@
 import * as utils from './utils.js';
 import * as chatbot_ui from './chatbot_ui.js';
-import * as toolbar from './toolbar.js';
+import * as menu from './menu.js';
 
 
 
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     chatbot_ui.handlePageLink();
-    toolbar.handleMenuForm();
+    menu.handleMenuForm();
     chatbot_ui.setupSwipe();
-
+    chatbot_ui.handlePageButtons();
 });

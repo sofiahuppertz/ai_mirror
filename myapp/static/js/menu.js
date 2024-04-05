@@ -1,5 +1,30 @@
 import * as utils from './utils.js';
 
+
+// Function to reset the menu display
+
+function resetMenuDisplay() {
+
+    const subelements = document.querySelectorAll('.menu-sub-elem');
+    const symbolBtns = document.querySelectorAll('.symbol');
+    const contentMenu = document.getElementById('content-menu');
+    const menuForm = document.getElementById('menu');
+    const closeMenuBtn = document.getElementById('close-menu-btn');
+    const menuBtn = document.getElementById('menu-btn');
+
+    subelements.forEach((subelement) => {
+        subelement.style.display = 'none';
+    });
+    symbolBtns.forEach((symbolBtn) => {
+        symbolBtn.innerHTML = '+';
+    });
+    menuBtn.style.display = 'flex';
+    contentMenu.style.display = 'none';
+    closeMenuBtn.style.display = 'none';
+    menuForm.style.right = 'auto';
+    menuForm.style.left = '2vw';
+}
+
 // Function to search for a page
 
 export function handleMenuForm() {
@@ -17,8 +42,6 @@ export function handleMenuForm() {
         const menuBtn = clonedMenuForm.querySelector('#menu-btn');
         const closeMenuBtn = clonedMenuForm.querySelector('#close-menu-btn');
         const contentMenu = document.getElementById('content-menu');
-        const subelements = document.querySelectorAll('.menu-sub-elem');
-        const symbolBtns = document.querySelectorAll('.symbol');
         
         let action = event.target;
         if (action.tagName !== 'BUTTON') {
@@ -32,36 +55,28 @@ export function handleMenuForm() {
             contentMenu.style.display = 'block';
             clonedMenuForm.style.left = 'auto';
             clonedMenuForm.style.right = '2vw';
-
             handleMenuContent();
         }
         else if (value === 'close') {
-            subelements.forEach((subelement) => {
-                subelement.style.display = 'none';
-            });
-            symbolBtns.forEach((symbolBtn) => {
-                symbolBtn.innerHTML = '+';
-            });
-            menuBtn.style.display = 'flex';
-            contentMenu.style.display = 'none';
-            closeMenuBtn.style.display = 'none';
-            clonedMenuForm.style.right = 'auto';
-            clonedMenuForm.style.left = '2vw';
-
+            resetMenuDisplay();
         }
 
     });
 }
 
+// Function to handle the menu content
+
 export function handleMenuContent() {
     const menuContent = document.getElementById('content-menu');
     const clonedMenuContent = menuContent.cloneNode(true);
+    
     menuContent.parentNode.replaceChild(clonedMenuContent, menuContent);
     const sections = [7, 15, 28, 44, 51, 67, 83, 92, 104, 116, 127, 137];
 
     clonedMenuContent.addEventListener('click', function(event) {
         event.preventDefault();
 
+        const menuBtn = document.getElementById('menu-btn');
         let target = event.target;
 
 
@@ -74,13 +89,14 @@ export function handleMenuContent() {
         const numValue = Number(value);
         
         if (value == 'elem-1') {
+            resetMenuDisplay();
             utils.change_page('next', 0);
         }
         else if (!isNaN(numValue) && numValue >= 0 && numValue <= 11) {
+            resetMenuDisplay();
             utils.change_page('next', sections[numValue] - 1);
         }
         else {
-
 
             let subelements = clonedMenuContent.querySelectorAll(`.${value}`);
 
@@ -96,7 +112,5 @@ export function handleMenuContent() {
                 }
             });
         }
-        
-
     });
 }

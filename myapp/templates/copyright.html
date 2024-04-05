@@ -5,13 +5,13 @@
 {%block content%}
 <div id="book-container">
     <div id="copyright" style="margin-top: 10%;">
-        <form  action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
+        <form  id="change-page-form" method="POST">
             <p class="justify-sides">
                 <span>PUBLISHED</span>  
                 <span>BY</span> 
             </p>
             <a href="https://sebastian.studio" style="display: block; text-align: center;">
-                <img src="../static/images/sebastian-studio-logo.png" style="width: 40%; margin: 30px;">
+                <img src="../static/images/sebastian-studio-logo.png" style="width: 40%; max-width: 270px; margin: 30px;">
             </a>
             
             
