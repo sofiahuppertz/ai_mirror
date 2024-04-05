@@ -6,11 +6,8 @@
     <form action="{{ url_for('page', page_number=session['page_num'])}}" method="POST">
         <img id="coverImage" src="{{ url_for('static', filename='/images/cover.svg') }}" alt="Cover Image">
         <div class="link-container">
-            <a href="https://www.instagram.com/sebastianstudio/">
-                <img src="../static/images/insta-logo.png" style="width: 40px;">
-            </a>
             <a href="https://sebastian.studio">
-                <img src="../static/images/sebastian-studio-logo.png" style="width: 100px;">
+                <img src="../static/images/cover-logo.svg" style="width: 100%;">
             </a>
         </div>
         <div class="page-button">
@@ -21,5 +18,10 @@
         </div>
     </form>
 </div>
+<style>
+    #go-author_bio {
+        display: none;
+    }
+</style>
 <script type="module" src="{{ url_for('static', filename='js/cover.js') }}"></script>
 {%endblock%}
