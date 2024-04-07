@@ -5,16 +5,16 @@
 <div id="book-cover">
     <form id="change-page-form" method="POST">
         <img id="coverImage" src="{{ url_for('static', filename='/images/cover.svg') }}" alt="Cover Image">
-        <div class="link-container">
+        <div class="cover-link-container">
             <a href="https://sebastian.studio">
-                <img src="../static/images/cover-logo.svg" style="width: 100%;">
+                <div class="logo" alt="Sebastian Studio"></div>
             </a>
         </div>
         <div class="page-button">
             <button type="submit"  name="action" value="next">&gt;</button>
         </div>
         <div id="page" style="display: none;">
-            <h7>-3</h7>
+            <h7>-1</h7>
         </div>
     </form>
 </div>

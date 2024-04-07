@@ -61,19 +61,19 @@ def index():
 
 @application.route("/cover", methods=["GET", "POST"])
 def cover():
-    session['page_num'] = -3
+    session['page_num'] = -1
     return render_template("cover.html")
 
 
 @application.route("/author_bio", methods=["GET", "POST"])
 def author_bio():
-    session['page_num'] = -2
+    session['page_num'] = -3
     return render_template("author_bio.html")
 
 
 @application.route("/copyright", methods=["GET", "POST"])
 def copyright():
-    session['page_num'] = -1
+    session['page_num'] = -2
     return render_template("copyright.html")
 
 
@@ -128,11 +128,11 @@ def page(page_number):
     if session['page_num'] == 0:
         return redirect(url_for('note_to_experts'))
     elif session['page_num'] == -1:
-        return redirect(url_for('copyright'))
-    elif session['page_num'] == -2:
-        return redirect(url_for('author_bio'))
-    elif session['page_num'] <= -3:
         return redirect(url_for('cover'))
+    elif session['page_num'] == -2:
+        return redirect(url_for('copyright'))
+    elif session['page_num'] <= -3:
+        return redirect(url_for('author_bio'))
         
     # Extract the question and answer from the database
     question, answer = utils.get_question_and_answer(session['page_num'], db_Session)

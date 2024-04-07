@@ -88,13 +88,25 @@ export function handleMenuContent() {
         const value = target.dataset.value;
         const numValue = Number(value);
         
-        if (value == 'elem-1') {
+        if(value == 'elem-0') {
             resetMenuDisplay();
-            utils.change_page('next', 0);
+            utils.handlePageChange('previous', 0);
+        }
+        else if (value == 'elem-5') {
+            resetMenuDisplay();
+            utils.handlePageChange('previous', -1);
+        }
+        else if (value == 'elem-6') {
+            resetMenuDisplay();
+            utils.handlePageChange('previous', -2);
+        }
+        else  if (value == 'elem-1') {
+            resetMenuDisplay();
+            utils.handlePageChange('next', 0);
         }
         else if (!isNaN(numValue) && numValue >= 0 && numValue <= 11) {
             resetMenuDisplay();
-            utils.change_page('next', sections[numValue] - 1);
+            utils.handlePageChange('next', sections[numValue] - 1);
         }
         else {
 

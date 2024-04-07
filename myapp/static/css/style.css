@@ -65,6 +65,10 @@ p {
     padding: 0;
 }
 
+.page-buttons button:hover {
+    color: black;
+}
+
 
 
 #chatbot-button {
@@ -72,16 +76,13 @@ p {
     right: 2vw;
     top: 0;
     z-index: 1;
-    margin: 10px;
+    padding: 10px;
+
 }
 
 #chatbot-button button {
     background-color: white;
-    color: black;
-    border: 1px solid rgb(119, 118, 118);
-    font-size: 14px;
-    border-radius: 5px;
-    padding: 10px;
+    border: none;
 
 }
 
@@ -124,8 +125,7 @@ p {
     }
 
 }
-#header-section { 
-
+#header-section {
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -302,7 +302,6 @@ p {
     top: 0;
     left: 2vw;
     padding: 10px;
-    padding-top: 20px;
     z-index: 99;
 }
 
@@ -399,6 +398,10 @@ p {
     padding: 0;
 }
 
+.page-button button:hover {
+    color: black;
+}
+
 @media screen and (min-width: 520px) {
     
     #book-container {
@@ -447,12 +450,24 @@ p {
     }
 }
 
-.link-container {
+.cover-link-container {
+    display: flex;
     position: fixed;
+    justify-content: center;
     bottom: 10%; 
     width: 100%; 
 }
 
+.logo {
+    width: 180px;
+    height: 60px;  
+    background-image: url('../images/cover-logo.svg');
+    background-size: cover;
+}
+
+a:hover .logo {
+    background-image: url('../images/cover-logo-dark.svg');
+}
 #author-name {
     display: flex;
     align-items: center;
@@ -461,14 +476,9 @@ p {
     padding-bottom: 10px;
 }
 
-.justify-sides {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
 
 #transition-overlay {
-    visibility: hidden;
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -476,6 +486,7 @@ p {
     height: 100%;
     background-color: white;
     z-index: 9999;
+    animation: none;
 }
 
 #transition-overlay img {
@@ -483,7 +494,22 @@ p {
     top: 0;
     left: 50%;
     transform: translate(-50%, 0);
-    height: 100%;
+    width: 100%;
+    max-width: 700px;
+    animation: none;
 }
+
+@keyframes fade-in {
+    0% { opacity: 0; }
+    30% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes fade-out {
+    0% { opacity: 1; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
 
 

@@ -340,7 +340,7 @@ function handleSwipe(swipeDirection) {
         value = "previous";
     }
 
-    utils.change_page(value, pageNumber);
+    utils.handlePageChange(value, pageNumber);
 }
 
 export function setupSwipe() {
@@ -386,6 +386,6 @@ export function handlePageButtons() {
     
     changePageForm.addEventListener('submit', function(event) {
         event.preventDefault();
-        utils.change_page(event.submitter.value, pageNumber);
+        utils.handlePageChange(event.submitter.value, pageNumber);
     });
 }
