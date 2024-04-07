@@ -31,12 +31,12 @@ export function handlePageChange(value, pageNumber) {
 
         transitionImage.src = imageAdress;
         overlay.style.display = 'block';
-        overlay.style.animation = 'fade-in 3.5s linear forwards';
-        transitionImage.style.animation = 'fade-out 3.5s linear forwards';
+        overlay.style.animation = 'fade-in 4s linear forwards';
+        transitionImage.style.animation = 'fade-out 4s linear forwards';
 
         let timeoutId = setTimeout(() => {
             changePage(value, pageNumber);
-        }, 3500);
+        }, 4000);
 
         skipButton.addEventListener('click', function() {
             clearTimeout(timeoutId);
