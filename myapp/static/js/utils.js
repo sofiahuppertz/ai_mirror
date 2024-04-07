@@ -24,19 +24,24 @@ export function handlePageChange(value, pageNumber) {
     
     if (chapters_last_pages.includes(pageNumber) && value === 'next') {
         let index = chapters_last_pages.indexOf(pageNumber);
-        
         let imageAdress = '../static/images/transitions/transition-' + index + '.svg';
         const overlay = document.getElementById('transition-overlay');
         const transitionImage = document.getElementById('transition-img');
+        const skipButton = document.getElementById('skip-btn');
 
         transitionImage.src = imageAdress;
         overlay.style.display = 'block';
-        overlay.style.animation = 'fade-in 3s linear forwards';
-        transitionImage.style.animation = 'fade-out 3s linear forwards';
+        overlay.style.animation = 'fade-in 3.5s linear forwards';
+        transitionImage.style.animation = 'fade-out 3.5s linear forwards';
 
-        setTimeout(() => {
+        let timeoutId = setTimeout(() => {
             changePage(value, pageNumber);
-        }, 3000);
+        }, 3500);
+
+        skipButton.addEventListener('click', function() {
+            clearTimeout(timeoutId);
+            changePage(value, pageNumber);
+        });
     }
     else {
         changePage(value, pageNumber);

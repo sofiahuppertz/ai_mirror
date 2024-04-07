@@ -511,5 +511,10 @@ a:hover .logo {
     100% { opacity: 0; }
 }
 
-
-
+#skip-btn {
+    text-decoration: underline;
+    font-size: 14px;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
